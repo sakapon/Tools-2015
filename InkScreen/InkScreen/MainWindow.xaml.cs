@@ -23,6 +23,9 @@ namespace InkScreen
         public MainWindow()
         {
             InitializeComponent();
+
+            this.SetBorderless();
+            this.FullScreenForAll();
         }
     }
 }

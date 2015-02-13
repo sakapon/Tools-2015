@@ -1,8 +1,12 @@
 ﻿<Window x:Class="InkScreen.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Ink Screen" Height="350" Width="525" Background="#01FFFFFF">
     <Grid>
-        
+    	<InkCanvas Background="{x:Null}">
+    		<InkCanvas.DefaultDrawingAttributes>
+    			<DrawingAttributes Color="Black" Width="4" Height="4" StylusTip="Ellipse"/>
+    		</InkCanvas.DefaultDrawingAttributes>
+    	</InkCanvas>
     </Grid>
 </Window>
