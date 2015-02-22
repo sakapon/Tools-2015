@@ -8,7 +8,7 @@
 	</Window.DataContext>
 	<Grid>
 		<Border Height="120" Width="120" Background="#AA3399FF" CornerRadius="60">
-			<TextBlock Text="{Binding Minute.Value, Mode=OneWay}" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-5,0,0"/>
+			<TextBlock Text="{Binding Minute.Value, Mode=OneWay, StringFormat=\{0:D2\}}" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-5,0,0"/>
 		</Border>
 		<Border Height="60" Width="60" Background="#AAFF9933" CornerRadius="30" Margin="40,40,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
 			<TextBlock Text="{Binding Hour.Value, Mode=OneWay}" FontSize="32" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0"/>
