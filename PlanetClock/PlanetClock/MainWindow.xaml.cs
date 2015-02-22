@@ -23,6 +23,8 @@ namespace PlanetClock
         public MainWindow()
         {
             InitializeComponent();
+
+            MouseLeftButtonDown += (o, e) => DragMove();
         }
     }
 }

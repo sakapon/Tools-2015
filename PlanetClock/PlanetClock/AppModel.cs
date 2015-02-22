@@ -16,7 +16,6 @@ namespace PlanetClock
         {
             JustMinutesArrived = new PeriodicTimer2(TimeSpan.FromMinutes(1), GetNextJustTime);
             Hour = JustMinutesArrived
-                .Filter(dt => dt.Month == 0)
                 .Map(dt => dt.Hour)
                 .ToGetProperty(DateTime.Now.Hour);
             Minute = JustMinutesArrived
