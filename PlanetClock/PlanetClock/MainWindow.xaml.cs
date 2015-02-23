@@ -13,6 +13,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using KLibrary.Labs.Reactive;
 
 namespace PlanetClock
 {
@@ -21,16 +22,26 @@ namespace PlanetClock
     /// </summary>
     public partial class MainWindow : Window
     {
+        const double π = Math.PI;
+        const double HourRadius = 110;
+
         public MainWindow()
         {
             InitializeComponent();
 
             HourLayer.SetAffineTransform();
             SecondLayer.SetAffineTransform();
+            var hourTranslate = ((TransformGroup)HourLayer.RenderTransform).Children.OfType<TranslateTransform>().Single();
+            Action setHourAngle = () =>
+            {
+                var hourAngle = GetCurrentHour() * 2 * π / 12;
+                hourTranslate.X = HourRadius * Math.Sin(hourAngle);
+                hourTranslate.Y = -HourRadius * Math.Cos(hourAngle);
+            };
 
-            var translate = ((TransformGroup)HourLayer.RenderTransform).Children.OfType<TranslateTransform>().Single();
-            translate.X = 0;
-            translate.Y = -110;
+            var appModel = (AppModel)DataContext;
+            //appModel.JustMinutesArrived.Subscribe(Observer2.Create<DateTime>(dt => setHourAngle()));
+            setHourAngle();
 
             MouseLeftButtonDown += (o, e) => DragMove();
             Loaded += MainWindow_Loaded;
@@ -38,8 +49,14 @@ namespace PlanetClock
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var secondAnimation = CreateRotationAnimation(SecondLayer, 6 * GetCurrentSecond(), TimeSpan.FromMinutes(1));
+            var secondAnimation = CreateRotationAnimation(SecondLayer, GetCurrentSecond() * 360 / 60, TimeSpan.FromMinutes(1));
             secondAnimation.Begin();
+        }
+
+        static double GetCurrentHour()
+        {
+            var now = DateTime.Now;
+            return now.Hour + now.Minute / 60.0;
         }
 
         static double GetCurrentSecond()
