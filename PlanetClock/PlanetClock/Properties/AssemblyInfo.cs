@@ -7,12 +7,12 @@ using System.Windows;
 // アセンブリに関する一般情報は以下の属性セットをとおして制御されます。
 // アセンブリに関連付けられている情報を変更するには、
 // これらの属性値を変更してください。
-[assembly: AssemblyTitle("PlanetClock")]
+[assembly: AssemblyTitle("Planet Clock")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PlanetClock")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyCompany("Keiho Sakapon")]
+[assembly: AssemblyProduct("KTools")]
+[assembly: AssemblyCopyright("© 2015 Keiho Sakapon")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
