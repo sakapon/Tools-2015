@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,7 +15,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using KLibrary.Labs.Reactive;
 
 namespace PlanetClock
 {
@@ -40,7 +41,9 @@ namespace PlanetClock
             };
 
             var appModel = (AppModel)DataContext;
-            //appModel.JustMinutesArrived.Subscribe(Observer2.Create<DateTime>(dt => setHourAngle()));
+            appModel.JustMinutesArrived
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe(dt => setHourAngle());
             setHourAngle();
 
             MouseLeftButtonDown += (o, e) => DragMove();
