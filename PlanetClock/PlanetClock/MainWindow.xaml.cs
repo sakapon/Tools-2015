@@ -32,10 +32,10 @@ namespace PlanetClock
 
             HourLayer.SetAffineTransform();
             SecondLayer.SetAffineTransform();
-            var hourTranslate = ((TransformGroup)HourLayer.RenderTransform).Children.OfType<TranslateTransform>().Single();
-            Action setHourAngle = () =>
+            var hourTranslate = HourLayer.GetAffineTransform<TranslateTransform>();
+            Action<DateTime> setHourAngle = dt =>
             {
-                var hourAngle = GetCurrentHour() * 2 * π / 12;
+                var hourAngle = GetHours(dt) * 2 * π / 12;
                 hourTranslate.X = HourRadius * Math.Sin(hourAngle);
                 hourTranslate.Y = -HourRadius * Math.Cos(hourAngle);
             };
@@ -43,8 +43,8 @@ namespace PlanetClock
             var appModel = (AppModel)DataContext;
             appModel.JustMinutesArrived
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(dt => setHourAngle());
-            setHourAngle();
+                .Subscribe(setHourAngle);
+            setHourAngle(DateTime.Now);
 
             MouseLeftButtonDown += (o, e) => DragMove();
             Loaded += MainWindow_Loaded;
@@ -52,20 +52,18 @@ namespace PlanetClock
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var secondAnimation = CreateRotationAnimation(SecondLayer, GetCurrentSecond() * 360 / 60, TimeSpan.FromMinutes(1));
+            var secondAnimation = CreateRotationAnimation(SecondLayer, GetSeconds(DateTime.Now) * 360 / 60, TimeSpan.FromMinutes(1));
             secondAnimation.Begin();
         }
 
-        static double GetCurrentHour()
+        static double GetHours(DateTime dt)
         {
-            var now = DateTime.Now;
-            return now.Hour + now.Minute / 60.0;
+            return dt.Hour + dt.Minute / 60.0;
         }
 
-        static double GetCurrentSecond()
+        static double GetSeconds(DateTime dt)
         {
-            var now = DateTime.Now;
-            return now.Second + now.Millisecond / 1000.0;
+            return dt.Second + dt.Millisecond / 1000.0;
         }
 
         static Storyboard CreateRotationAnimation(UIElement element, double initialAngle, TimeSpan interval)

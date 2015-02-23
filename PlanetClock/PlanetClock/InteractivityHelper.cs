@@ -26,5 +26,10 @@ namespace PlanetClock
                 throw new InvalidOperationException("RenderTransform プロパティの設定を解除してください。");
             }
         }
+
+        public static T GetAffineTransform<T>(this UIElement element) where T : Transform
+        {
+            return ((TransformGroup)element.RenderTransform).Children.OfType<T>().Single();
+        }
     }
 }
