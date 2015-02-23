@@ -25,13 +25,19 @@ namespace PlanetClock
         {
             InitializeComponent();
 
+            HourLayer.SetAffineTransform();
+            SecondLayer.SetAffineTransform();
+
+            var translate = ((TransformGroup)HourLayer.RenderTransform).Children.OfType<TranslateTransform>().Single();
+            translate.X = 0;
+            translate.Y = -110;
+
             MouseLeftButtonDown += (o, e) => DragMove();
             Loaded += MainWindow_Loaded;
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            SecondLayer.SetAffineTransform();
             var secondAnimation = CreateRotationAnimation(SecondLayer, 6 * GetCurrentSecond(), TimeSpan.FromMinutes(1));
             secondAnimation.Begin();
         }
