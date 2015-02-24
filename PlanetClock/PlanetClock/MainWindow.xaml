@@ -8,10 +8,10 @@
 	</Window.DataContext>
 	<Grid>
 		<Border Height="121" Width="121" Background="#AA3399FF" CornerRadius="60">
-			<TextBlock Text="{Binding Minute.Value, Mode=OneWay, StringFormat=\{0:D2\}}" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0"/>
+			<TextBlock x:Name="MinuteText" Text="{Binding Minute.Value, Mode=OneTime, StringFormat=\{0:D2\}}" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0"/>
 		</Border>
 		<Border x:Name="HourLayer" Height="51" Width="51" Background="#AAFF9933" CornerRadius="25">
-			<TextBlock Text="{Binding Hour.Value, Mode=OneWay}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-3,0,0"/>
+			<TextBlock x:Name="HourText" Text="{Binding Hour.Value, Mode=OneTime}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-3,0,0"/>
 		</Border>
 		<Border x:Name="SecondLayer" Height="145" HorizontalAlignment="Center">
 			<Ellipse Fill="#99009900" Width="11" Height="11" VerticalAlignment="Top"/>

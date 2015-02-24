@@ -46,6 +46,13 @@ namespace PlanetClock
                 .Subscribe(setHourAngle);
             setHourAngle(DateTime.Now);
 
+            appModel.Hour
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe(h => AnimationHelper.CreateUpdateTextFadeAnimation(HourText, h.ToString(), TimeSpan.FromSeconds(0.4)).Begin(this));
+            appModel.Minute
+                .ObserveOn(SynchronizationContext.Current)
+                .Subscribe(m => AnimationHelper.CreateUpdateTextFadeAnimation(MinuteText, m.ToString(), TimeSpan.FromSeconds(0.4)).Begin(this));
+
             MouseLeftButtonDown += (o, e) => DragMove();
             Loaded += MainWindow_Loaded;
         }
