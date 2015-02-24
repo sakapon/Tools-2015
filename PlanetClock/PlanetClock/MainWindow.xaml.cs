@@ -53,7 +53,7 @@ namespace PlanetClock
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var secondAnimation = CreateRotationAnimation(SecondLayer, GetSeconds(DateTime.Now) * 360 / 60, TimeSpan.FromMinutes(1));
-            secondAnimation.Begin();
+            secondAnimation.Begin(this);
         }
 
         static double GetHours(DateTime dt)
