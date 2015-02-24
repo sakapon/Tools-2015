@@ -10,11 +10,11 @@
 		<Border Height="121" Width="121" Background="#AA3399FF" CornerRadius="60">
 			<TextBlock x:Name="MinuteText" Text="{Binding Minute.Value, Mode=OneTime, StringFormat=\{0:D2\}}" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0"/>
 		</Border>
-		<Border x:Name="HourLayer" Height="51" Width="51" Background="#AAFF9933" CornerRadius="25">
-			<TextBlock x:Name="HourText" Text="{Binding Hour.Value, Mode=OneTime}" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-3,0,0"/>
+		<Border x:Name="HourLayer" Height="45" Width="45" Background="#AAFF9933" CornerRadius="22">
+			<TextBlock x:Name="HourText" Text="{Binding Hour.Value, Mode=OneTime}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0"/>
 		</Border>
-		<Border x:Name="SecondLayer" Height="145" HorizontalAlignment="Center">
-			<Ellipse Fill="#99009900" Width="11" Height="11" VerticalAlignment="Top"/>
+		<Border x:Name="SecondLayer" Height="141" HorizontalAlignment="Center">
+			<Ellipse Fill="#99009900" Width="9" Height="9" VerticalAlignment="Top"/>
 		</Border>
 	</Grid>
 </Window>

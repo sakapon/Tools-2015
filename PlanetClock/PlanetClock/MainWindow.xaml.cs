@@ -24,7 +24,7 @@ namespace PlanetClock
     public partial class MainWindow : Window
     {
         const double π = Math.PI;
-        const double HourRadius = 110;
+        const double HourRadius = 100;
 
         public MainWindow()
         {
