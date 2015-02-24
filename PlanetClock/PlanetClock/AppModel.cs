@@ -21,10 +21,10 @@ namespace PlanetClock
             JustMinutesArrived = new PeriodicTimer2(TimeSpan.FromMinutes(1), () => GetNextJustTime(initialTime));
             JustMinutes = JustMinutesArrived.ToGetProperty(GetJustTime(initialTime));
 
-            Hour = JustMinutesArrived
+            Hour = JustMinutes
                 .Map(dt => dt.Hour)
                 .ToGetProperty(initialTime.Hour);
-            Minute = JustMinutesArrived
+            Minute = JustMinutes
                 .Map(dt => dt.Minute)
                 .ToGetProperty(initialTime.Minute);
         }

@@ -32,26 +32,28 @@ namespace PlanetClock
 
             HourLayer.SetAffineTransform();
             SecondLayer.SetAffineTransform();
+
             var hourTranslate = HourLayer.GetAffineTransform<TranslateTransform>();
-            Action<DateTime> setHourAngle = dt =>
+            Action<DateTime> setHourTranslate = dt =>
             {
-                var hourAngle = GetHours(dt) * 2 * π / 12;
-                hourTranslate.X = HourRadius * Math.Sin(hourAngle);
-                hourTranslate.Y = -HourRadius * Math.Cos(hourAngle);
+                var v = GetHourTranslateVector(dt);
+                hourTranslate.X = v.X;
+                hourTranslate.Y = v.Y;
             };
 
             var appModel = (AppModel)DataContext;
-            appModel.JustMinutesArrived
+
+            appModel.JustMinutes
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(setHourAngle);
-            setHourAngle(DateTime.Now);
+                .Subscribe(setHourTranslate);
+            setHourTranslate(appModel.JustMinutes.Value);
 
             appModel.Hour
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe(h => AnimationHelper.CreateUpdateTextFadeAnimation(HourText, h.ToString(), TimeSpan.FromSeconds(0.4)).Begin(this));
             appModel.Minute
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(m => AnimationHelper.CreateUpdateTextFadeAnimation(MinuteText, m.ToString(), TimeSpan.FromSeconds(0.4)).Begin(this));
+                .Subscribe(m => AnimationHelper.CreateUpdateTextFadeAnimation(MinuteText, m.ToString("D2"), TimeSpan.FromSeconds(0.4)).Begin(this));
 
             MouseLeftButtonDown += (o, e) => DragMove();
             Loaded += MainWindow_Loaded;
@@ -61,6 +63,15 @@ namespace PlanetClock
         {
             var secondAnimation = CreateRotationAnimation(SecondLayer, GetSeconds(DateTime.Now) * 360 / 60, TimeSpan.FromMinutes(1));
             secondAnimation.Begin(this);
+        }
+
+        static Vector GetHourTranslateVector(DateTime dt)
+        {
+            var hourAngle = GetHours(dt) * 2 * π / 12;
+            return new Vector(
+                HourRadius * Math.Sin(hourAngle),
+                -HourRadius * Math.Cos(hourAngle)
+            );
         }
 
         static double GetHours(DateTime dt)
