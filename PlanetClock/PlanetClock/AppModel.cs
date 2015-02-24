@@ -9,24 +9,34 @@ namespace PlanetClock
     public class AppModel
     {
         public IObservable<DateTime> JustMinutesArrived { get; private set; }
+        public IObservableGetProperty<DateTime> JustMinutes { get; private set; }
+
         public IObservableGetProperty<int> Hour { get; private set; }
         public IObservableGetProperty<int> Minute { get; private set; }
 
         public AppModel()
         {
-            JustMinutesArrived = new PeriodicTimer2(TimeSpan.FromMinutes(1), GetNextJustTime);
+            var initialTime = DateTime.Now;
+
+            JustMinutesArrived = new PeriodicTimer2(TimeSpan.FromMinutes(1), () => GetNextJustTime(initialTime));
+            JustMinutes = JustMinutesArrived.ToGetProperty(GetJustTime(initialTime));
+
             Hour = JustMinutesArrived
                 .Map(dt => dt.Hour)
-                .ToGetProperty(DateTime.Now.Hour);
+                .ToGetProperty(initialTime.Hour);
             Minute = JustMinutesArrived
                 .Map(dt => dt.Minute)
-                .ToGetProperty(DateTime.Now.Minute);
+                .ToGetProperty(initialTime.Minute);
         }
 
-        static DateTime GetNextJustTime()
+        static DateTime GetJustTime(DateTime dt)
         {
-            var n = DateTime.Now.AddMinutes(1);
-            return new DateTime(n.Year, n.Month, n.Day, n.Hour, n.Minute, 0);
+            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, 0);
+        }
+
+        static DateTime GetNextJustTime(DateTime dt)
+        {
+            return GetJustTime(dt.AddMinutes(1));
         }
     }
 }
