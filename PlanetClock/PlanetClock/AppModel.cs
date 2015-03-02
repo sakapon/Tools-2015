@@ -8,6 +8,9 @@ namespace PlanetClock
 {
     public class AppModel
     {
+        const int TickMilliseconds = 20;
+        static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(TickMilliseconds);
+
         public IObservable<DateTime> JustTicksArrived { get; private set; }
         public IObservableGetProperty<DateTime> JustTicks { get; private set; }
 
@@ -21,7 +24,7 @@ namespace PlanetClock
         {
             var initialTime = DateTime.Now;
 
-            JustTicksArrived = new PeriodicTimer2(TimeSpan.FromSeconds(0.1), () => GetNextJustTicks(initialTime));
+            JustTicksArrived = new PeriodicTimer2(TickInterval, () => GetNextJustTicks(initialTime));
             JustTicks = JustTicksArrived.ToGetProperty(GetJustTicks(initialTime));
 
             Hour = JustTicks
@@ -42,12 +45,12 @@ namespace PlanetClock
 
         static DateTime GetJustTicks(DateTime dt)
         {
-            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, (dt.Millisecond / 100) * 100);
+            return new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second, (dt.Millisecond / TickMilliseconds) * TickMilliseconds);
         }
 
         static DateTime GetNextJustTicks(DateTime dt)
         {
-            return GetJustTicks(dt).AddSeconds(0.1);
+            return GetJustTicks(dt).Add(TickInterval);
         }
     }
 }
