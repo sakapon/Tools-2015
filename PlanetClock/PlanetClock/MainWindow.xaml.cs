@@ -15,6 +15,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using KLibrary.Labs.Reactive.Models;
 
 namespace PlanetClock
 {
@@ -26,27 +27,17 @@ namespace PlanetClock
         const double π = Math.PI;
         const double HourRadius = 100;
 
+        public IObservableProperty<Vector> HourTranslate { get; private set; }
+        public IObservableProperty<double> SecondAngle { get; private set; }
+
         public MainWindow()
         {
+            HourTranslate = ObservableProperty.Create<Vector>();
+            SecondAngle = ObservableProperty.Create<double>();
+
             InitializeComponent();
 
-            HourLayer.SetAffineTransform();
-            SecondLayer.SetAffineTransform();
-
-            var hourTranslate = HourLayer.GetAffineTransform<TranslateTransform>();
-            Action<DateTime> setHourTranslate = dt =>
-            {
-                var v = GetHourTranslateVector(dt);
-                hourTranslate.X = v.X;
-                hourTranslate.Y = v.Y;
-            };
-
             var appModel = (AppModel)DataContext;
-
-            appModel.JustMinutes
-                .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(setHourTranslate);
-            setHourTranslate(appModel.JustMinutes.Value);
 
             appModel.Hour
                 .ObserveOn(SynchronizationContext.Current)
@@ -55,50 +46,25 @@ namespace PlanetClock
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe(m => AnimationHelper.CreateUpdateTextFadeAnimation(MinuteText, m.ToString("D2"), TimeSpan.FromSeconds(0.4)).Begin(this));
 
+            appModel.HourInDouble
+                .Select(ToHourTranslateVector)
+                .Subscribe(HourTranslate);
+            HourTranslate.Value = ToHourTranslateVector(appModel.HourInDouble.Value);
+            appModel.SecondInDouble
+                .Select(s => s * 360 / 60)
+                .Subscribe(SecondAngle);
+            SecondAngle.Value = appModel.SecondInDouble.Value * 360 / 60;
+
             MouseLeftButtonDown += (o, e) => DragMove();
-            Loaded += MainWindow_Loaded;
         }
 
-        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        static Vector ToHourTranslateVector(double hour)
         {
-            var secondAnimation = CreateRotationAnimation(SecondLayer, GetSeconds(DateTime.Now) * 360 / 60, TimeSpan.FromMinutes(1));
-            secondAnimation.Begin(this);
-        }
-
-        static Vector GetHourTranslateVector(DateTime dt)
-        {
-            var hourAngle = GetHours(dt) * 2 * π / 12;
+            var hourAngle = hour * 2 * π / 12;
             return new Vector(
                 HourRadius * Math.Sin(hourAngle),
                 -HourRadius * Math.Cos(hourAngle)
             );
-        }
-
-        static double GetHours(DateTime dt)
-        {
-            return dt.Hour + dt.Minute / 60.0;
-        }
-
-        static double GetSeconds(DateTime dt)
-        {
-            return dt.Second + dt.Millisecond / 1000.0;
-        }
-
-        static Storyboard CreateRotationAnimation(UIElement element, double initialAngle, TimeSpan interval)
-        {
-            var storyboard = new Storyboard
-            {
-                RepeatBehavior = RepeatBehavior.Forever,
-            };
-
-            var angleFrames = new DoubleAnimationUsingKeyFrames();
-            Storyboard.SetTarget(angleFrames, element);
-            Storyboard.SetTargetProperty(angleFrames, new PropertyPath("(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)"));
-            angleFrames.KeyFrames.Add(new EasingDoubleKeyFrame(initialAngle, TimeSpan.Zero));
-            angleFrames.KeyFrames.Add(new EasingDoubleKeyFrame(initialAngle + 360, interval));
-            storyboard.Children.Add(angleFrames);
-
-            return storyboard;
         }
     }
 }
