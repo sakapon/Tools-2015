@@ -10,15 +10,14 @@ namespace PlanetClock
         const int TickMilliseconds = 20;
         static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(TickMilliseconds);
 
-        IObservable<DateTime> _JustTicksArrived;
         public IObservableGetProperty<DateTime> JustTicks { get; private set; }
 
         public AppModel()
         {
             var initialTime = DateTime.Now;
 
-            _JustTicksArrived = new PeriodicTimer2(TickInterval, () => GetNextJustTicks(initialTime));
-            JustTicks = _JustTicksArrived.ToGetProperty(GetJustTicks(initialTime));
+            JustTicks = new PeriodicTimer2(TickInterval, () => GetNextJustTicks(initialTime))
+                .ToGetProperty(GetJustTicks(initialTime));
         }
 
         static readonly Func<DateTime, DateTime> GetJustTicks = dt =>
