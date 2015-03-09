@@ -28,16 +28,29 @@ namespace PlanetClock
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (ToFunc == null) return Binding.DoNothing;
-
-            return ToFunc.DynamicInvoke(value);
+            return DoFunc(ToFunc, value, parameter);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (FromFunc == null) return Binding.DoNothing;
+            return DoFunc(FromFunc, value, parameter);
+        }
 
-            return FromFunc.DynamicInvoke(value);
+        static object DoFunc(MulticastDelegate func, object value, object parameter)
+        {
+            if (func == null) return value;
+
+            if (func.Method.ContainsGenericParameters) return Binding.DoNothing;
+
+            var parameterInfoes = func.Method.GetParameters();
+
+            switch (parameterInfoes.Length)
+            {
+                case 0: return func.DynamicInvoke();
+                case 1: return func.DynamicInvoke(value);
+                case 2: return func.DynamicInvoke(value, parameter);
+                default: return Binding.DoNothing;
+            }
         }
     }
 }

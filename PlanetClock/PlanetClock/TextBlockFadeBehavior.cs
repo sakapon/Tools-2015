@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Interactivity;
 
 namespace PlanetClock
 {
     public class TextBlockFadeBehavior : Behavior<TextBlock>
     {
-        // ここでは、PropertyMetadata の PropertyChangedCallback を使用しません。
         public static readonly DependencyProperty BindedTextProperty =
-            DependencyProperty.Register("BindedText", typeof(string), typeof(TextBlockFadeBehavior), new PropertyMetadata(TextBlock.TextProperty.DefaultMetadata.DefaultValue));
+            DependencyProperty.Register("BindedText", typeof(string), typeof(TextBlockFadeBehavior), new PropertyMetadata(TextBlock.TextProperty.DefaultMetadata.DefaultValue, OnTextChanged));
 
         public string BindedText
         {
@@ -29,21 +27,17 @@ namespace PlanetClock
 
         protected override void OnAttached()
         {
+            base.OnAttached();
+
             AssociatedObject.Text = BindedText;
         }
 
-        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            base.OnPropertyChanged(e);
+            var @this = (TextBlockFadeBehavior)d;
+            if (@this.AssociatedObject == null) return;
 
-            if (e.Property == BindedTextProperty) OnTextChanged(e);
-        }
-
-        void OnTextChanged(DependencyPropertyChangedEventArgs e)
-        {
-            if (AssociatedObject == null) return;
-
-            var storyboard = Animations.CreateFade(AssociatedObject, TotalSpan, (string)e.NewValue);
+            var storyboard = Animations.CreateFade(@this.AssociatedObject, @this.TotalSpan, (string)e.NewValue);
             storyboard.Begin();
         }
     }
