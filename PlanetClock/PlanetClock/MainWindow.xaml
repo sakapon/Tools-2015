@@ -3,16 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:PlanetClock"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
-        x:Name="window" x:Class="PlanetClock.MainWindow"
-        Title="Planet Clock" Height="301" Width="301" Topmost="True" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" Foreground="White" DataContext="{Binding AppModel, ElementName=window}">
+        x:Class="PlanetClock.MainWindow"
+        Title="Planet Clock" Height="301" Width="301" Topmost="True" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" Foreground="White">
 	<Window.Resources>
-		<local:FuncConverter x:Key="SecondToAngleConverter" ToFunc="{x:Static local:MainWindow.SecondToAngle}"/>
+		<local:FuncConverter x:Key="SecondToAngleConverter" ToFunc="{x:Static local:MainViewModel.SecondToAngle}"/>
 	</Window.Resources>
+	<Window.DataContext>
+		<local:MainViewModel/>
+	</Window.DataContext>
 	<Grid>
 		<Border x:Name="MinuteLayer" Height="121" Width="121" Background="#AA3399FF" CornerRadius="60">
 			<TextBlock Text="60" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0">
 				<i:Interaction.Behaviors>
-					<local:TextBlockFadeBehavior BindedText="{Binding Minute.Value, Mode=OneWay, StringFormat=\{0:D2\}}" TotalSpan="0:0:0.4"/>
+					<local:TextBlockFadeBehavior BindedText="{Binding AppModel.Minute.Value, Mode=OneWay, StringFormat=\{0:D2\}}" TotalSpan="0:0:0.4"/>
 				</i:Interaction.Behaviors>
 			</TextBlock>
 		</Border>
@@ -22,12 +25,12 @@
 					<ScaleTransform/>
 					<SkewTransform/>
 					<RotateTransform/>
-					<TranslateTransform X="{Binding HourTranslate.Value.X, ElementName=window}" Y="{Binding HourTranslate.Value.Y, ElementName=window}"/>
+					<TranslateTransform X="{Binding HourTranslate.Value.X}" Y="{Binding HourTranslate.Value.Y}"/>
 				</TransformGroup>
 			</Border.RenderTransform>
 			<TextBlock Text="24" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0">
 				<i:Interaction.Behaviors>
-					<local:TextBlockFadeBehavior BindedText="{Binding Hour.Value, Mode=OneWay}" TotalSpan="0:0:0.4"/>
+					<local:TextBlockFadeBehavior BindedText="{Binding AppModel.Hour.Value, Mode=OneWay}" TotalSpan="0:0:0.4"/>
 				</i:Interaction.Behaviors>
 			</TextBlock>
 		</Border>
@@ -36,7 +39,7 @@
 				<TransformGroup>
 					<ScaleTransform/>
 					<SkewTransform/>
-					<RotateTransform Angle="{Binding SecondInDouble.Value, Converter={StaticResource SecondToAngleConverter}, Mode=OneWay}"/>
+					<RotateTransform Angle="{Binding AppModel.SecondInDouble.Value, Converter={StaticResource SecondToAngleConverter}, Mode=OneWay}"/>
 					<TranslateTransform/>
 				</TransformGroup>
 			</Border.RenderTransform>
