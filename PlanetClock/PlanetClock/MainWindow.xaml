@@ -15,7 +15,7 @@
 		<Border x:Name="MinuteLayer" Height="121" Width="121" Background="#AA3399FF" CornerRadius="60">
 			<TextBlock Text="60" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0">
 				<i:Interaction.Behaviors>
-					<local:TextBlockFadeBehavior BindedText="{Binding AppModel.Minute.Value, Mode=OneWay, StringFormat=\{0:D2\}}" TotalSpan="0:0:0.4"/>
+					<local:TextBlockFadeBehavior BindedText="{Binding Minute.Value, Mode=OneWay, StringFormat=\{0:D2\}}" TotalSpan="0:0:0.4"/>
 				</i:Interaction.Behaviors>
 			</TextBlock>
 		</Border>
@@ -30,7 +30,7 @@
 			</Border.RenderTransform>
 			<TextBlock Text="24" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0">
 				<i:Interaction.Behaviors>
-					<local:TextBlockFadeBehavior BindedText="{Binding AppModel.Hour.Value, Mode=OneWay}" TotalSpan="0:0:0.4"/>
+					<local:TextBlockFadeBehavior BindedText="{Binding Hour.Value, Mode=OneWay}" TotalSpan="0:0:0.4"/>
 				</i:Interaction.Behaviors>
 			</TextBlock>
 		</Border>
@@ -39,7 +39,7 @@
 				<TransformGroup>
 					<ScaleTransform/>
 					<SkewTransform/>
-					<RotateTransform Angle="{Binding AppModel.SecondInDouble.Value, Converter={StaticResource SecondToAngleConverter}, Mode=OneWay}"/>
+					<RotateTransform Angle="{Binding SecondInDouble.Value, Converter={StaticResource SecondToAngleConverter}, Mode=OneWay}"/>
 					<TranslateTransform/>
 				</TransformGroup>
 			</Border.RenderTransform>
