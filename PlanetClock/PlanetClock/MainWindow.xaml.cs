@@ -28,12 +28,10 @@ namespace PlanetClock
         const double HourRadius = 100;
 
         public IObservableProperty<Vector> HourTranslate { get; private set; }
-        public IObservableProperty<double> SecondAngle { get; private set; }
 
         public MainWindow()
         {
             HourTranslate = ObservableProperty.Create<Vector>();
-            SecondAngle = ObservableProperty.Create<double>();
 
             InitializeComponent();
 
@@ -43,10 +41,6 @@ namespace PlanetClock
                 .Select(ToHourTranslateVector)
                 .Subscribe(HourTranslate);
             HourTranslate.Value = ToHourTranslateVector(appModel.HourInDouble.Value);
-            appModel.SecondInDouble
-                .Select(s => s * 360 / 60)
-                .Subscribe(SecondAngle);
-            SecondAngle.Value = appModel.SecondInDouble.Value * 360 / 60;
 
             MouseLeftButtonDown += (o, e) => DragMove();
         }
@@ -59,5 +53,7 @@ namespace PlanetClock
                 -HourRadius * Math.Cos(hourAngle)
             );
         }
+
+        public static readonly Func<double, double> SecondToAngle = s => s * (360 / 60);
     }
 }
