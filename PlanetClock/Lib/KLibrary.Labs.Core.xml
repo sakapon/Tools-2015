@@ -202,6 +202,35 @@
             Represents the unset state.
             </summary>
         </member>
+        <member name="M:KLibrary.Labs.Maybe`1.#ctor(`0)">
+            <summary>
+            Initializes a new instance of the <see cref="T:KLibrary.Labs.Maybe`1"/> structure.
+            </summary>
+            <param name="value">The underlying value.</param>
+        </member>
+        <member name="P:KLibrary.Labs.Maybe`1.Value">
+            <summary>
+            Gets the underlying value.
+            </summary>
+        </member>
+        <member name="P:KLibrary.Labs.Maybe`1.HasValue">
+            <summary>
+            Gets a value indicating whether this object has a non-null value.
+            </summary>
+        </member>
+        <member name="T:KLibrary.Labs.Maybe">
+            <summary>
+            Provides a set of static methods for the <see cref="T:KLibrary.Labs.Maybe`1"/> structure.
+            </summary>
+        </member>
+        <member name="M:KLibrary.Labs.Maybe.ToMaybe``1(``0)">
+            <summary>
+            Creates a <see cref="T:KLibrary.Labs.Maybe`1"/> from a value.
+            </summary>
+            <typeparam name="T">The type of a value.</typeparam>
+            <param name="value">A value.</param>
+            <returns>A <see cref="T:KLibrary.Labs.Maybe`1"/>.</returns>
+        </member>
         <member name="T:KLibrary.Labs.Reactive.Models.IObservableProperty`1">
             <summary>
             Represents an IObservable-based settable property, which notifies the value has been changed.
@@ -292,6 +321,61 @@
             </summary>
             <typeparam name="TSource">The type of objects to be provided.</typeparam>
             <returns>An <see cref="T:KLibrary.Labs.Reactive.IObservableEvent`1"/> object.</returns>
+        </member>
+        <member name="M:KLibrary.Labs.Reactive.Models.ObservableProperty.ToObservableMask``1(System.IObservable{``0})">
+            <summary>
+            Creates a wrapper of an <see cref="T:System.IObservable`1"/> object to restrict members to be accessed.
+            </summary>
+            <typeparam name="TSource">The type of objects to be provided.</typeparam>
+            <param name="source">An <see cref="T:System.IObservable`1"/> object.</param>
+            <returns>A wrapped <see cref="T:System.IObservable`1"/> object.</returns>
+        </member>
+        <member name="M:KLibrary.Labs.Reactive.Models.ObservableProperty.ToGetPropertyMask``1(KLibrary.Labs.Reactive.Models.IObservableProperty{``0})">
+            <summary>
+            Creates a wrapper of an <see cref="T:KLibrary.Labs.Reactive.Models.IObservableProperty`1"/> object to restrict members to be accessed.
+            </summary>
+            <typeparam name="TSource">The type of objects to be provided.</typeparam>
+            <param name="source">An <see cref="T:KLibrary.Labs.Reactive.Models.IObservableProperty`1"/> object.</param>
+            <returns>A wrapped <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> object.</returns>
+        </member>
+        <member name="M:KLibrary.Labs.Reactive.Models.ObservableProperty.ToGetProperty``1(System.IObservable{``0})">
+            <summary>
+            Creates an <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> from an <see cref="T:System.IObservable`1"/>, with the default value of <typeparamref name="TSource"/>.
+            </summary>
+            <typeparam name="TSource">The type of objects to be provided.</typeparam>
+            <param name="source">An <see cref="T:System.IObservable`1"/> object.</param>
+            <returns>An <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> object.</returns>
+        </member>
+        <member name="M:KLibrary.Labs.Reactive.Models.ObservableProperty.ToGetProperty``1(System.IObservable{``0},``0)">
+            <summary>
+            Creates an <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> from an <see cref="T:System.IObservable`1"/>, with the specified default value.
+            </summary>
+            <typeparam name="TSource">The type of objects to be provided.</typeparam>
+            <param name="source">An <see cref="T:System.IObservable`1"/> object.</param>
+            <param name="defaultValue">The default value.</param>
+            <returns>An <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> object.</returns>
+        </member>
+        <member name="M:KLibrary.Labs.Reactive.Models.ObservableProperty.ToGetProperty``2(KLibrary.Labs.Reactive.Models.IObservableProperty{``0},System.Func{``0,``1})">
+            <summary>
+            Creates an <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> from another <see cref="T:KLibrary.Labs.Reactive.Models.IObservableProperty`1"/>.
+            The default value is determined by the value of <paramref name="source"/>.
+            </summary>
+            <typeparam name="TSource">The type of objects to be provided.</typeparam>
+            <typeparam name="TResult">The type of mapped objects.</typeparam>
+            <param name="source">An <see cref="T:KLibrary.Labs.Reactive.Models.IObservableProperty`1"/> object.</param>
+            <param name="mapping">A transform function to apply to each element.</param>
+            <returns>An <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> object.</returns>
+        </member>
+        <member name="M:KLibrary.Labs.Reactive.Models.ObservableProperty.ToGetProperty``2(KLibrary.Labs.Reactive.Models.IObservableGetProperty{``0},System.Func{``0,``1})">
+            <summary>
+            Creates an <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> from another <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/>.
+            The default value is determined by the value of <paramref name="source"/>.
+            </summary>
+            <typeparam name="TSource">The type of objects to be provided.</typeparam>
+            <typeparam name="TResult">The type of mapped objects.</typeparam>
+            <param name="source">An <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> object.</param>
+            <param name="mapping">A transform function to apply to each element.</param>
+            <returns>An <see cref="T:KLibrary.Labs.Reactive.Models.IObservableGetProperty`1"/> object.</returns>
         </member>
     </members>
 </doc>

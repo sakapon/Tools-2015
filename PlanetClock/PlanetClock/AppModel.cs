@@ -27,20 +27,15 @@ namespace PlanetClock
             JustTicksArrived = new PeriodicTimer2(TickInterval, () => GetNextJustTicks(initialTime));
             JustTicks = JustTicksArrived.ToGetProperty(GetJustTicks(initialTime));
 
-            Hour = JustTicks
-                .Map(dt => dt.Hour)
-                .ToGetProperty(initialTime.Hour);
-            Minute = JustTicks
-                .Map(dt => dt.Minute)
-                .ToGetProperty(initialTime.Minute);
+            Hour = JustTicks.ToGetProperty(dt => dt.Hour);
+            Minute = JustTicks.ToGetProperty(dt => dt.Minute);
 
             HourInDouble = JustTicks
                 .Filter(dt => dt.Second == 0 && dt.Millisecond == 0)
-                .Map(dt => dt.Hour + dt.Minute / 60.0)
-                .ToGetProperty(initialTime.Hour + initialTime.Minute / 60.0);
+                .Map(ToHourInDouble)
+                .ToGetProperty(ToHourInDouble(initialTime));
             SecondInDouble = JustTicks
-                .Map(dt => dt.Second + dt.Millisecond / 1000.0)
-                .ToGetProperty(initialTime.Second + initialTime.Millisecond / 1000.0);
+                .ToGetProperty(ToSecondInDouble);
         }
 
         static DateTime GetJustTicks(DateTime dt)
@@ -52,5 +47,8 @@ namespace PlanetClock
         {
             return GetJustTicks(dt).Add(TickInterval);
         }
+
+        static readonly Func<DateTime, double> ToHourInDouble = dt => dt.Hour + dt.Minute / 60.0;
+        static readonly Func<DateTime, double> ToSecondInDouble = dt => dt.Second + dt.Millisecond / 1000.0;
     }
 }
