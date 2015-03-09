@@ -27,31 +27,23 @@ namespace PlanetClock
         const double π = Math.PI;
         const double HourRadius = 100;
 
-        public IObservableProperty<Vector> HourTranslate { get; private set; }
+        public AppModel AppModel { get; private set; }
+        public IObservableGetProperty<Vector> HourTranslate { get; private set; }
 
         public MainWindow()
         {
-            HourTranslate = ObservableProperty.Create<Vector>();
+            AppModel = new AppModel();
+            HourTranslate = AppModel.HourInDouble.ToGetProperty(HourToTranslate);
 
             InitializeComponent();
-
-            var appModel = (AppModel)DataContext;
-
-            appModel.HourInDouble
-                .Select(ToHourTranslateVector)
-                .Subscribe(HourTranslate);
-            HourTranslate.Value = ToHourTranslateVector(appModel.HourInDouble.Value);
 
             MouseLeftButtonDown += (o, e) => DragMove();
         }
 
-        static Vector ToHourTranslateVector(double hour)
+        static Vector HourToTranslate(double hour)
         {
-            var hourAngle = hour * 2 * π / 12;
-            return new Vector(
-                HourRadius * Math.Sin(hourAngle),
-                -HourRadius * Math.Cos(hourAngle)
-            );
+            var hourAngle = hour * (2 * π / 12);
+            return HourRadius * new Vector(Math.Sin(hourAngle), -Math.Cos(hourAngle));
         }
 
         public static readonly Func<double, double> SecondToAngle = s => s * (360 / 60);

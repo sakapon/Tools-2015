@@ -4,13 +4,10 @@
         xmlns:local="clr-namespace:PlanetClock"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         x:Name="window" x:Class="PlanetClock.MainWindow"
-        Title="Planet Clock" Height="301" Width="301" Topmost="True" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" Foreground="White">
+        Title="Planet Clock" Height="301" Width="301" Topmost="True" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" Foreground="White" DataContext="{Binding AppModel, ElementName=window}">
 	<Window.Resources>
 		<local:FuncConverter x:Key="SecondToAngleConverter" ToFunc="{x:Static local:MainWindow.SecondToAngle}"/>
 	</Window.Resources>
-	<Window.DataContext>
-		<local:AppModel/>
-	</Window.DataContext>
 	<Grid>
 		<Border x:Name="MinuteLayer" Height="121" Width="121" Background="#AA3399FF" CornerRadius="60">
 			<TextBlock Text="60" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0">
