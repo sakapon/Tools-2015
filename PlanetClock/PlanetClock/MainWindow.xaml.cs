@@ -39,13 +39,6 @@ namespace PlanetClock
 
             var appModel = (AppModel)DataContext;
 
-            appModel.Hour
-                .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(h => AnimationHelper.CreateUpdateTextFadeAnimation(HourText, h.ToString(), TimeSpan.FromSeconds(0.4)).Begin(this));
-            appModel.Minute
-                .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(m => AnimationHelper.CreateUpdateTextFadeAnimation(MinuteText, m.ToString("D2"), TimeSpan.FromSeconds(0.4)).Begin(this));
-
             appModel.HourInDouble
                 .Select(ToHourTranslateVector)
                 .Subscribe(HourTranslate);

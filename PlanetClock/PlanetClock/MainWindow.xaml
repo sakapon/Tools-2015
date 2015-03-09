@@ -9,8 +9,12 @@
 		<local:AppModel/>
 	</Window.DataContext>
 	<Grid>
-		<Border Height="121" Width="121" Background="#AA3399FF" CornerRadius="60">
-			<TextBlock x:Name="MinuteText" Text="{Binding Minute.Value, Mode=OneTime, StringFormat=\{0:D2\}}" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0"/>
+		<Border x:Name="MinuteLayer" Height="121" Width="121" Background="#AA3399FF" CornerRadius="60">
+			<TextBlock Text="60" FontSize="64" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-6,0,0">
+				<i:Interaction.Behaviors>
+					<local:TextBlockFadeBehavior BindedText="{Binding Minute.Value, Mode=OneWay, StringFormat=\{0:D2\}}" TotalSpan="0:0:0.4"/>
+				</i:Interaction.Behaviors>
+			</TextBlock>
 		</Border>
 		<Border x:Name="HourLayer" Height="45" Width="45" Background="#AAFF9933" CornerRadius="22" RenderTransformOrigin="0.5,0.5">
 			<Border.RenderTransform>
@@ -21,7 +25,11 @@
 					<TranslateTransform X="{Binding HourTranslate.Value.X, ElementName=window}" Y="{Binding HourTranslate.Value.Y, ElementName=window}"/>
 				</TransformGroup>
 			</Border.RenderTransform>
-			<TextBlock x:Name="HourText" Text="{Binding Hour.Value, Mode=OneTime}" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0"/>
+			<TextBlock Text="24" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-2,0,0">
+				<i:Interaction.Behaviors>
+					<local:TextBlockFadeBehavior BindedText="{Binding Hour.Value, Mode=OneWay}" TotalSpan="0:0:0.4"/>
+				</i:Interaction.Behaviors>
+			</TextBlock>
 		</Border>
 		<Border x:Name="SecondLayer" Height="141" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
 			<Border.RenderTransform>
