@@ -25,6 +25,7 @@ namespace PlanetClock
             InitializeComponent();
 
             MouseLeftButtonDown += (o, e) => DragMove();
+            MouseRightButtonUp += (o, e) => Close();
         }
     }
 }
