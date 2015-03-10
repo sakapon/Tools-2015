@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:PlanetClock"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         x:Class="PlanetClock.MainWindow"
-        Title="Planet Clock" Height="301" Width="301" Topmost="True" AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" Foreground="White">
+        Title="Planet Clock" Height="301" Width="301" Topmost="True" AllowsTransparency="True" WindowStyle="None" ShowInTaskbar="False" Background="{x:Null}" Foreground="White">
 	<Window.Resources>
 		<local:FuncConverter x:Key="SecondToAngleConverter" ToFunc="{x:Static local:MainViewModel.SecondToAngle}"/>
 	</Window.Resources>
