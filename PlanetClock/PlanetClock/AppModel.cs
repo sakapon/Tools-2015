@@ -7,7 +7,7 @@ namespace PlanetClock
 {
     public class AppModel
     {
-        const int TickMilliseconds = 20;
+        const int TickMilliseconds = 40;
         static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(TickMilliseconds);
 
         public IObservableGetProperty<DateTime> JustTicks { get; private set; }
