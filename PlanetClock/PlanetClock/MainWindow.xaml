@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:PlanetClock"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+        xmlns:ed="http://schemas.microsoft.com/expression/2010/drawing"
         x:Class="PlanetClock.MainWindow"
         Title="Planet Clock" Height="301" Width="301" Topmost="True" AllowsTransparency="True" WindowStyle="None" ShowInTaskbar="False" Background="{x:Null}" Foreground="White">
 	<Window.Resources>
@@ -34,7 +35,7 @@
 				</i:Interaction.Behaviors>
 			</TextBlock>
 		</Border>
-		<Border x:Name="SecondLayer" Height="141" HorizontalAlignment="Center" RenderTransformOrigin="0.5,0.5">
+		<Border x:Name="SecondLayer" Width="133" Height="133" RenderTransformOrigin="0.5,0.5">
 			<Border.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -43,7 +44,7 @@
 					<TranslateTransform/>
 				</TransformGroup>
 			</Border.RenderTransform>
-			<Ellipse Fill="#99009900" Width="9" Height="9" VerticalAlignment="Top"/>
+			<ed:Arc Fill="#99009900" ArcThickness="4" StartAngle="-15" EndAngle="15" Stretch="None"/>
 		</Border>
 	</Grid>
 </Window>
