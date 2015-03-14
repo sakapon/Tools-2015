@@ -29,12 +29,8 @@ namespace PlanetClock
             Hour = AppModel.JustTicks.ToGetProperty(dt => dt.Hour);
             Minute = AppModel.JustTicks.ToGetProperty(dt => dt.Minute);
 
-            HourInDouble = AppModel.JustTicks
-                .Filter(dt => dt.Second == 0 && dt.Millisecond == 0)
-                .Map(ToHourInDouble)
-                .ToGetProperty(ToHourInDouble(AppModel.JustTicks.Value));
-            SecondInDouble = AppModel.JustTicks
-                .ToGetProperty(ToSecondInDouble);
+            HourInDouble = AppModel.JustTicks.ToGetProperty(ToHourInDouble);
+            SecondInDouble = AppModel.JustTicks.ToGetProperty(ToSecondInDouble);
 
             HourTranslate = HourInDouble.ToGetProperty(HourToTranslate);
         }

@@ -11,13 +11,15 @@ namespace PlanetClock
         bool _isActive;
 
         public TimeSpan Interval { get; private set; }
+        public double SpeedRatio { get; private set; }
         Func<DateTime> _getInitialTime;
 
-        public PeriodicTimer2(TimeSpan interval, Func<DateTime> getInitialTime)
+        public PeriodicTimer2(TimeSpan interval, Func<DateTime> getInitialTime, double speedRatio)
         {
             if (getInitialTime == null) throw new ArgumentNullException("getInitialTime");
 
             Interval = interval;
+            SpeedRatio = speedRatio;
             _getInitialTime = getInitialTime;
         }
 
@@ -27,15 +29,24 @@ namespace PlanetClock
 
             Task.Run(() =>
             {
-                var nextTimePoint = _getInitialTime();
-                var timeout = (nextTimePoint - DateTime.Now).TotalMilliseconds;
+                var nextTime = _getInitialTime();
+                var nextTimePoint = nextTime;
+                var timeout = (nextTime - DateTime.Now).TotalMilliseconds;
                 Thread.Sleep(Math.Max(0, (int)Math.Ceiling(timeout)));
                 NotifyNext(nextTimePoint);
 
                 while (_isActive)
                 {
-                    nextTimePoint += Interval;
-                    timeout = (nextTimePoint - DateTime.Now).TotalMilliseconds;
+                    nextTime += Interval;
+                    if (SpeedRatio == 1.0)
+                    {
+                        nextTimePoint = nextTime;
+                    }
+                    else
+                    {
+                        nextTimePoint += TimeSpan.FromTicks((long)(SpeedRatio * Interval.Ticks));
+                    }
+                    timeout = (nextTime - DateTime.Now).TotalMilliseconds;
                     Thread.Sleep(Math.Max(0, (int)Math.Ceiling(timeout)));
                     NotifyNext(nextTimePoint);
                 }

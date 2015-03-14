@@ -16,7 +16,7 @@ namespace PlanetClock
         {
             var initialTime = DateTime.Now;
 
-            JustTicks = new PeriodicTimer2(TickInterval, () => GetNextJustTicks(initialTime))
+            JustTicks = new PeriodicTimer2(TickInterval, () => GetNextJustTicks(initialTime), 1)
                 .ToGetProperty(GetJustTicks(initialTime));
         }
 
