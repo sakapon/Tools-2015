@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using KLibrary.Labs.Reactive;
+using KLibrary.Labs.ObservableModel;
 
 namespace PlanetClock
 {

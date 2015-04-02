@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using KLibrary.Labs.Reactive;
-using KLibrary.Labs.Reactive.Models;
+using KLibrary.Labs.ObservableModel;
 
 namespace PlanetClock
 {
@@ -14,25 +13,25 @@ namespace PlanetClock
 
         public AppModel AppModel { get; private set; }
 
-        public IObservableGetProperty<int> Hour { get; private set; }
-        public IObservableGetProperty<int> Minute { get; private set; }
+        public IGetOnlyProperty<int> Hour { get; private set; }
+        public IGetOnlyProperty<int> Minute { get; private set; }
 
-        public IObservableGetProperty<double> HourInDouble { get; private set; }
-        public IObservableGetProperty<double> SecondInDouble { get; private set; }
+        public IGetOnlyProperty<double> HourInDouble { get; private set; }
+        public IGetOnlyProperty<double> SecondInDouble { get; private set; }
 
-        public IObservableGetProperty<Vector> HourTranslate { get; private set; }
+        public IGetOnlyProperty<Vector> HourTranslate { get; private set; }
 
         public MainViewModel()
         {
             AppModel = new AppModel();
 
-            Hour = AppModel.JustTicks.ToGetProperty(dt => dt.Hour);
-            Minute = AppModel.JustTicks.ToGetProperty(dt => dt.Minute);
+            Hour = AppModel.JustTicks.SelectToGetOnly(dt => dt.Hour);
+            Minute = AppModel.JustTicks.SelectToGetOnly(dt => dt.Minute);
 
-            HourInDouble = AppModel.JustTicks.ToGetProperty(ToHourInDouble);
-            SecondInDouble = AppModel.JustTicks.ToGetProperty(ToSecondInDouble);
+            HourInDouble = AppModel.JustTicks.SelectToGetOnly(ToHourInDouble);
+            SecondInDouble = AppModel.JustTicks.SelectToGetOnly(ToSecondInDouble);
 
-            HourTranslate = HourInDouble.ToGetProperty(HourToTranslate);
+            HourTranslate = HourInDouble.SelectToGetOnly(HourToTranslate);
         }
 
         static readonly Func<DateTime, double> ToHourInDouble = dt => dt.Hour + dt.Minute / 60.0;

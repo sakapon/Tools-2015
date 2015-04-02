@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using KLibrary.Labs.Reactive.Models;
+using KLibrary.Labs.ObservableModel;
 
 namespace PlanetClock
 {
@@ -10,14 +10,14 @@ namespace PlanetClock
         const int TickMilliseconds = 40;
         static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(TickMilliseconds);
 
-        public IObservableGetProperty<DateTime> JustTicks { get; private set; }
+        public IGetOnlyProperty<DateTime> JustTicks { get; private set; }
 
         public AppModel()
         {
             var initialTime = DateTime.Now;
 
             JustTicks = new PeriodicTimer2(TickInterval, () => GetNextJustTicks(initialTime), 1)
-                .ToGetProperty(GetJustTicks(initialTime));
+                .ToGetOnly(GetJustTicks(initialTime));
         }
 
         static readonly Func<DateTime, DateTime> GetJustTicks = dt =>

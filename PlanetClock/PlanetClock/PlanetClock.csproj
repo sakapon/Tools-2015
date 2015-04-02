@@ -36,8 +36,8 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="KLibrary.Labs.Core">
-      <HintPath>..\Lib\KLibrary.Labs.Core.dll</HintPath>
+    <Reference Include="KLibrary.Labs.ObservableModel">
+      <HintPath>..\Lib\KLibrary.Labs.ObservableModel.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Expression.Drawing" />
     <Reference Include="Microsoft.Expression.Interactions" />
