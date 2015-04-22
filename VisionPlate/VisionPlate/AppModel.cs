@@ -2,39 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using AForge.Video;
 using AForge.Video.DirectShow;
 using KLibrary.Labs.ObservableModel;
 
 namespace VisionPlate
 {
-    public abstract class Dispatchable
-    {
-        SynchronizationContext _uiContext = SynchronizationContext.Current;
-
-        protected void InvokeOnUIThread(Action action)
-        {
-            if (action == null) return;
-            if (_uiContext == null) return;
-
-            _uiContext.Send(o => action(), null);
-        }
-
-        protected void InvokeOnUIThreadAsync(Action action)
-        {
-            if (action == null) return;
-            if (_uiContext == null) return;
-
-            _uiContext.Post(o => action(), null);
-        }
-    }
-
-    public class AppModel : Dispatchable
+    public class AppModel : DispatchableBase
     {
         ISettableProperty<WriteableBitmap> _VideoBitmap;
         public IGetOnlyProperty<WriteableBitmap> VideoBitmap { get; private set; }
@@ -62,31 +40,27 @@ namespace VisionPlate
             if (filters.Count == 0) return;
 
             var filter = filters[0];
-            var capture = new VideoCaptureDevice(filter.MonikerString);
-            // 指定された幅に最も近い VideoCapabilities。
-            capture.VideoResolution = capture.VideoCapabilities.OrderBy(c => Math.Abs(c.FrameSize.Width - 960)).FirstOrDefault();
-            capture.NewFrame += (o, e) => InvokeOnUIThread(() => capture_NewFrame(o, e));
+            var input = new VideoInput(filter.MonikerString);
 
-            StopVideo.Subscribe(_ => capture.SignalToStop());
-            capture.Start();
+            StopVideo.Subscribe(_ => input.StopAsync());
+            input.FrameArrived.Subscribe(OnFrameArrived);
         }
 
-        void capture_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        void OnFrameArrived(System.Drawing.Bitmap bitmap)
         {
-            var bitmap = eventArgs.Frame;
-
             if (_VideoBitmap.Value == null)
             {
-                _VideoBitmap.Value = new WriteableBitmap(bitmap.Width, bitmap.Height, 96.0, 96.0, PixelFormats.Rgb24, null);
+                InvokeOnInitialThread(() => _VideoBitmap.Value = new WriteableBitmap(bitmap.Width, bitmap.Height, 96.0, 96.0, PixelFormats.Rgb24, null));
                 _bitmapRect = new Int32Rect(0, 0, bitmap.Width, bitmap.Height);
                 _bitmapStride = 3 * bitmap.Width;
             }
 
             var bitmapBytes = ToBytes(bitmap);
             Array.Reverse(bitmapBytes);
+
             // BMP のヘッダーの 54 バイトはフッターとなり、無視されます。
             // 左右が反転します。
-            _VideoBitmap.Value.WritePixels(_bitmapRect, bitmapBytes, _bitmapStride, 0);
+            InvokeOnInitialThreadAsync(() => _VideoBitmap.Value.WritePixels(_bitmapRect, bitmapBytes, _bitmapStride, 0));
 
             // BitmapFrame を使う方法。
             //TheImage.Source = ToBitmapFrame(eventArgs.Frame);

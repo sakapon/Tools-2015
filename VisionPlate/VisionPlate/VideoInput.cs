@@ -34,6 +34,7 @@ namespace VisionPlate
             if (_device.IsRunning) _device.SignalToStop();
         }
 
+        // VideoCaptureDevice を終了させないとアプリケーションが終了せず、したがってデストラクターも呼び出されないようです。
         ~VideoInput()
         {
             Dispose(false);
