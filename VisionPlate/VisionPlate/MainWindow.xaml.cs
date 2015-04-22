@@ -23,6 +23,8 @@ namespace VisionPlate
         public MainWindow()
         {
             InitializeComponent();
+
+            MouseLeftButtonDown += (o, e) => DragMove();
         }
     }
 }
