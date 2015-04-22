@@ -1,8 +1,19 @@
-﻿<Window x:Class="VisionPlate.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+        xmlns:local="clr-namespace:VisionPlate"
+		xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+		x:Class="VisionPlate.MainWindow"
+        Title="Vision Plate" Height="400" Width="600">
+	<Window.DataContext>
+		<local:AppModel/>
+	</Window.DataContext>
+	<i:Interaction.Triggers>
+		<i:EventTrigger EventName="Closing">
+			<ei:ChangePropertyAction TargetObject="{Binding StopVideo, Mode=OneWay}" PropertyName="Value"/>
+		</i:EventTrigger>
+	</i:Interaction.Triggers>
+	<Grid>
+		<Image Source="{Binding VideoBitmap.Value, Mode=OneWay}"/>
+	</Grid>
 </Window>
