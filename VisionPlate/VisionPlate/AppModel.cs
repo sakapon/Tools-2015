@@ -17,8 +17,13 @@ namespace VisionPlate
         ISettableProperty<WriteableBitmap> _VideoBitmap;
         public IGetOnlyProperty<WriteableBitmap> VideoBitmap { get; private set; }
 
-        public ISettableProperty<object> SwitchToNextDevice { get; private set; }
+        public ISettableProperty<object> SwitchDevice { get; private set; }
         public ISettableProperty<object> StopVideo { get; private set; }
+
+        FilterInfoCollection _deviceInfoes;
+        int _selectedDeviceIndex;
+        VideoInput _selectedVideoInput;
+        IDisposable _selectedVideoFrame;
 
         Int32Rect _bitmapRect;
         int _bitmapStride;
@@ -28,22 +33,35 @@ namespace VisionPlate
             _VideoBitmap = ObservableProperty.CreateSettable<WriteableBitmap>(null);
             VideoBitmap = _VideoBitmap.ToGetOnlyMask();
 
-            SwitchToNextDevice = ObservableProperty.CreateSettable<object>(null, true);
+            SwitchDevice = ObservableProperty.CreateSettable<object>(null, true);
+            SwitchDevice.Subscribe(_ => StartDevice((_selectedDeviceIndex + 1) % _deviceInfoes.Count));
+
             StopVideo = ObservableProperty.CreateSettable<object>(null, true);
+            StopVideo.Subscribe(_ =>
+            {
+                if (_selectedVideoInput != null) _selectedVideoInput.StopAsync();
+            });
 
             Task.Run(() => InitializeDevice());
         }
 
         void InitializeDevice()
         {
-            var filters = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-            if (filters.Count == 0) return;
+            _deviceInfoes = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            if (_deviceInfoes.Count == 0) return;
 
-            var filter = filters[0];
-            var input = new VideoInput(filter.MonikerString, new Size(640, 480));
+            StartDevice(0);
+        }
 
-            StopVideo.Subscribe(_ => input.StopAsync());
-            input.FrameArrived.Subscribe(OnFrameArrived);
+        void StartDevice(int deviceIndex)
+        {
+            if (_selectedVideoFrame != null) _selectedVideoFrame.Dispose();
+            if (_selectedVideoInput != null) _selectedVideoInput.Dispose();
+
+            _selectedDeviceIndex = deviceIndex;
+            var deviceInfo = _deviceInfoes[_selectedDeviceIndex];
+            _selectedVideoInput = new VideoInput(deviceInfo.MonikerString, new Size(640, 480));
+            _selectedVideoFrame = _selectedVideoInput.FrameArrived.Subscribe(OnFrameArrived);
         }
 
         void OnFrameArrived(System.Drawing.Bitmap bitmap)

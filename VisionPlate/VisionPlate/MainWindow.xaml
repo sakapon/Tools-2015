@@ -9,6 +9,9 @@
 		<local:AppModel/>
 	</Window.DataContext>
 	<i:Interaction.Triggers>
+		<i:EventTrigger EventName="MouseRightButtonUp">
+			<ei:ChangePropertyAction TargetObject="{Binding SwitchDevice, Mode=OneWay}" PropertyName="Value"/>
+		</i:EventTrigger>
 		<i:EventTrigger EventName="Closing">
 			<ei:ChangePropertyAction TargetObject="{Binding StopVideo, Mode=OneWay}" PropertyName="Value"/>
 		</i:EventTrigger>
