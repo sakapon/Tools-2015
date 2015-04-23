@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -34,7 +35,8 @@ namespace VisionPlate
             VideoBitmap = _VideoBitmap.ToGetOnlyMask();
 
             SwitchDevice = ObservableProperty.CreateSettable<object>(null, true);
-            SwitchDevice.Subscribe(_ => StartDevice((_selectedDeviceIndex + 1) % _deviceInfoes.Count));
+            SwitchDevice.ObserveOn(Scheduler.Default)
+                .Subscribe(_ => StartDevice((_selectedDeviceIndex + 1) % _deviceInfoes.Count));
 
             StopVideo = ObservableProperty.CreateSettable<object>(null, true);
             StopVideo.Subscribe(_ =>
@@ -53,10 +55,14 @@ namespace VisionPlate
             StartDevice(0);
         }
 
-        void StartDevice(int deviceIndex)
+        async void StartDevice(int deviceIndex)
         {
             if (_selectedVideoFrame != null) _selectedVideoFrame.Dispose();
             if (_selectedVideoInput != null) _selectedVideoInput.Dispose();
+            _VideoBitmap.Value = null;
+
+            // 連続してデバイスを操作すると失敗することがあるため、待機します。
+            await Task.Delay(200);
 
             _selectedDeviceIndex = deviceIndex;
             var deviceInfo = _deviceInfoes[_selectedDeviceIndex];
@@ -78,7 +84,8 @@ namespace VisionPlate
 
             // BMP のヘッダーの 54 バイトはフッターとなり、無視されます。
             // 左右が反転します。
-            InvokeOnInitialThreadAsync(() => _VideoBitmap.Value.WritePixels(_bitmapRect, bitmapBytes, _bitmapStride, 0));
+            var b = _VideoBitmap.Value;
+            if (b != null) InvokeOnInitialThreadAsync(() => b.WritePixels(_bitmapRect, bitmapBytes, _bitmapStride, 0));
 
             // BitmapFrame を使う方法。
             //TheImage.Source = ToBitmapFrame(eventArgs.Frame);
