@@ -40,7 +40,7 @@ namespace VisionPlate
             if (filters.Count == 0) return;
 
             var filter = filters[0];
-            var input = new VideoInput(filter.MonikerString);
+            var input = new VideoInput(filter.MonikerString, new Size(640, 480));
 
             StopVideo.Subscribe(_ => input.StopAsync());
             input.FrameArrived.Subscribe(OnFrameArrived);

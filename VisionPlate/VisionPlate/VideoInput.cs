@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows;
 using AForge.Video;
 using AForge.Video.DirectShow;
 using KLibrary.Labs.ObservableModel;
@@ -14,9 +14,9 @@ namespace VisionPlate
     {
         VideoCaptureDevice _device;
 
-        public IGetOnlyProperty<Bitmap> FrameArrived { get; private set; }
+        public IGetOnlyProperty<System.Drawing.Bitmap> FrameArrived { get; private set; }
 
-        public VideoInput(string deviceMoniker)
+        public VideoInput(string deviceMoniker, Size size)
         {
             _device = new VideoCaptureDevice(deviceMoniker);
 
@@ -24,8 +24,11 @@ namespace VisionPlate
                 .Select(_ => _.EventArgs.Frame)
                 .ToGetOnly(null, true);
 
-            // 指定された幅に最も近い VideoCapabilities。
-            _device.VideoResolution = _device.VideoCapabilities.OrderBy(c => Math.Abs(c.FrameSize.Width - 960)).FirstOrDefault();
+            // 指定された解像度に最も近いものを探します。
+            _device.VideoResolution = _device.VideoCapabilities
+                .OrderBy(c => Math.Abs(c.FrameSize.Width - size.Width))
+                .ThenBy(c => Math.Abs(c.FrameSize.Height - size.Height))
+                .FirstOrDefault();
             _device.Start();
         }
 
