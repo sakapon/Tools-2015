@@ -4,7 +4,10 @@
         xmlns:local="clr-namespace:VisionPlate"
 		xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
 		x:Class="VisionPlate.MainWindow"
-        Title="Vision Plate" Height="400" Width="600" AllowsTransparency="True" WindowStyle="None" Background="#3399CCFF" Topmost="True" ResizeMode="CanResizeWithGrip">
+        Title="Vision Plate" Height="400" Width="600" MinHeight="120" MinWidth="180" AllowsTransparency="True" WindowStyle="None" Background="#01FFFFFF" Topmost="True" SnapsToDevicePixels="True">
+	<WindowChrome.WindowChrome>
+		<WindowChrome CaptionHeight="0" ResizeBorderThickness="16"/>
+	</WindowChrome.WindowChrome>
 	<Window.DataContext>
 		<local:AppModel/>
 	</Window.DataContext>
@@ -16,7 +19,9 @@
 			<ei:ChangePropertyAction TargetObject="{Binding StopVideo, Mode=OneWay}" PropertyName="Value"/>
 		</i:EventTrigger>
 	</i:Interaction.Triggers>
-	<Grid>
-		<Image Source="{Binding VideoBitmap.Value, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
-	</Grid>
+	<Border BorderBrush="#661133CC" BorderThickness="2" Margin="7">
+		<Grid Background="#3399CCFF">
+			<Image Source="{Binding VideoBitmap.Value, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+		</Grid>
+	</Border>
 </Window>
