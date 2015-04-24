@@ -19,9 +19,9 @@
 			<ei:ChangePropertyAction TargetObject="{Binding StopVideo, Mode=OneWay}" PropertyName="Value"/>
 		</i:EventTrigger>
 	</i:Interaction.Triggers>
-	<Border Background="#3399CCFF" BorderBrush="#803399FF" BorderThickness="1" Margin="7">
+	<Border Background="#1955AAFF" BorderBrush="#663399FF" BorderThickness="1" Margin="7">
 		<Grid Margin="8">
-			<Image Source="{Binding VideoBitmap.Value, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.5"/>
+			<Image Source="{Binding VideoBitmap.Value, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.6"/>
 		</Grid>
 	</Border>
 </Window>
