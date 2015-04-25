@@ -68,6 +68,8 @@ namespace VisionPlate
             var deviceInfo = _deviceInfoes[_selectedDeviceIndex];
             _selectedVideoInput = new VideoInput(deviceInfo.MonikerString, new Size(640, 480));
             _selectedVideoFrame = _selectedVideoInput.FrameArrived.Subscribe(OnFrameArrived);
+            // BitmapFrame を使う方法。
+            //_selectedVideoFrame = _selectedVideoInput.FrameArrived.Select(DrawingHelper.ToBitmapFrame).Subscribe(_VideoBitmap);
         }
 
         void OnFrameArrived(System.Drawing.Bitmap bitmap)
@@ -79,34 +81,13 @@ namespace VisionPlate
                 _bitmapStride = 3 * bitmap.Width;
             }
 
-            var bitmapBytes = ToBytes(bitmap);
+            var bitmapBytes = DrawingHelper.ToBytes(bitmap);
             Array.Reverse(bitmapBytes);
 
             // BMP のヘッダーの 54 バイトはフッターとなり、無視されます。
             // 左右が反転します。
             var b = _VideoBitmap.Value;
             if (b != null) InvokeOnInitialThreadAsync(() => b.WritePixels(_bitmapRect, bitmapBytes, _bitmapStride, 0));
-
-            // BitmapFrame を使う方法。
-            //TheImage.Source = ToBitmapFrame(eventArgs.Frame);
-        }
-
-        static BitmapFrame ToBitmapFrame(System.Drawing.Bitmap bitmap)
-        {
-            using (var stream = new MemoryStream())
-            {
-                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
-                return BitmapFrame.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-            }
-        }
-
-        static byte[] ToBytes(System.Drawing.Bitmap bitmap)
-        {
-            using (var stream = new MemoryStream())
-            {
-                bitmap.Save(stream, System.Drawing.Imaging.ImageFormat.Bmp);
-                return stream.ToArray();
-            }
         }
     }
 }

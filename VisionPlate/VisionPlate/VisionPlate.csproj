@@ -90,6 +90,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DispatchableBase.cs" />
+    <Compile Include="DrawingHelper.cs" />
     <Compile Include="VideoInput.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
