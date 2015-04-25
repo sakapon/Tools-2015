@@ -10,13 +10,13 @@ using KLibrary.Labs.ObservableModel;
 
 namespace VisionPlate
 {
-    public class VideoInput : IDisposable
+    public class VideoCaptureDevice2 : IDisposable
     {
         VideoCaptureDevice _device;
 
         public IGetOnlyProperty<System.Drawing.Bitmap> FrameArrived { get; private set; }
 
-        public VideoInput(string deviceMoniker, Size size)
+        public VideoCaptureDevice2(string deviceMoniker, Size size)
         {
             _device = new VideoCaptureDevice(deviceMoniker);
 
@@ -38,7 +38,7 @@ namespace VisionPlate
         }
 
         // VideoCaptureDevice を終了させないとアプリケーションが終了せず、したがってデストラクターも呼び出されないようです。
-        ~VideoInput()
+        ~VideoCaptureDevice2()
         {
             Dispose(false);
         }

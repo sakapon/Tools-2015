@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -23,7 +22,7 @@ namespace VisionPlate
 
         FilterInfoCollection _deviceInfoes;
         int _selectedDeviceIndex;
-        VideoInput _selectedVideoInput;
+        VideoCaptureDevice2 _selectedVideoDevice;
         IDisposable _selectedVideoFrame;
 
         Int32Rect _bitmapRect;
@@ -41,7 +40,7 @@ namespace VisionPlate
             StopVideo = ObservableProperty.CreateSettable<object>(null, true);
             StopVideo.Subscribe(_ =>
             {
-                if (_selectedVideoInput != null) _selectedVideoInput.StopAsync();
+                if (_selectedVideoDevice != null) _selectedVideoDevice.StopAsync();
             });
 
             Task.Run(() => InitializeDevice());
@@ -58,7 +57,7 @@ namespace VisionPlate
         async void StartDevice(int deviceIndex)
         {
             if (_selectedVideoFrame != null) _selectedVideoFrame.Dispose();
-            if (_selectedVideoInput != null) _selectedVideoInput.Dispose();
+            if (_selectedVideoDevice != null) _selectedVideoDevice.Dispose();
             _VideoBitmap.Value = null;
 
             // 連続してデバイスを操作すると失敗することがあるため、待機します。
@@ -66,10 +65,10 @@ namespace VisionPlate
 
             _selectedDeviceIndex = deviceIndex;
             var deviceInfo = _deviceInfoes[_selectedDeviceIndex];
-            _selectedVideoInput = new VideoInput(deviceInfo.MonikerString, new Size(640, 480));
-            _selectedVideoFrame = _selectedVideoInput.FrameArrived.Subscribe(OnFrameArrived);
+            _selectedVideoDevice = new VideoCaptureDevice2(deviceInfo.MonikerString, new Size(640, 480));
+            _selectedVideoFrame = _selectedVideoDevice.FrameArrived.Subscribe(OnFrameArrived);
             // BitmapFrame を使う方法。
-            //_selectedVideoFrame = _selectedVideoInput.FrameArrived.Select(DrawingHelper.ToBitmapFrame).Subscribe(_VideoBitmap);
+            //_selectedVideoFrame = _selectedVideoDevice.FrameArrived.Select(DrawingHelper.ToBitmapFrame).Subscribe(_VideoBitmap);
         }
 
         void OnFrameArrived(System.Drawing.Bitmap bitmap)

@@ -91,7 +91,7 @@
     </ApplicationDefinition>
     <Compile Include="DispatchableBase.cs" />
     <Compile Include="DrawingHelper.cs" />
-    <Compile Include="VideoInput.cs" />
+    <Compile Include="VideoCaptureDevice2.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
