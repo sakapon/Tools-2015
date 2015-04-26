@@ -8,27 +8,39 @@ namespace VisionPlate
 {
     public abstract class DispatchableBase
     {
-        public SynchronizationContext InitialContext { get; private set; }
+        protected SynchronizationContext InitialContext { get; private set; }
 
         public DispatchableBase()
         {
             InitialContext = SynchronizationContext.Current;
         }
 
-        protected void InvokeOnInitialThread(Action action)
+        public void InvokeOnContext(Action action)
         {
             if (action == null) return;
-            if (InitialContext == null) return;
 
-            InitialContext.Send(o => action(), null);
+            if (InitialContext != null)
+            {
+                InitialContext.Send(o => action(), null);
+            }
+            else
+            {
+                action();
+            }
         }
 
-        protected void InvokeOnInitialThreadAsync(Action action)
+        public void InvokeOnContextAsync(Action action)
         {
             if (action == null) return;
-            if (InitialContext == null) return;
 
-            InitialContext.Post(o => action(), null);
+            if (InitialContext != null)
+            {
+                InitialContext.Post(o => action(), null);
+            }
+            else
+            {
+                action();
+            }
         }
     }
 }

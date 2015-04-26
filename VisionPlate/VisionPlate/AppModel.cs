@@ -75,7 +75,7 @@ namespace VisionPlate
         {
             if (_VideoBitmap.Value == null)
             {
-                InvokeOnInitialThread(() => _VideoBitmap.Value = new WriteableBitmap(bitmap.Width, bitmap.Height, 96.0, 96.0, PixelFormats.Rgb24, null));
+                InvokeOnContext(() => _VideoBitmap.Value = new WriteableBitmap(bitmap.Width, bitmap.Height, 96.0, 96.0, PixelFormats.Rgb24, null));
                 _bitmapRect = new Int32Rect(0, 0, bitmap.Width, bitmap.Height);
                 _bitmapStride = 3 * bitmap.Width;
             }
@@ -86,7 +86,7 @@ namespace VisionPlate
             // BMP のヘッダーの 54 バイトはフッターとなり、無視されます。
             // 左右が反転します。
             var b = _VideoBitmap.Value;
-            if (b != null) InvokeOnInitialThreadAsync(() => b.WritePixels(_bitmapRect, bitmapBytes, _bitmapStride, 0));
+            if (b != null) InvokeOnContextAsync(() => b.WritePixels(_bitmapRect, bitmapBytes, _bitmapStride, 0));
         }
     }
 }
