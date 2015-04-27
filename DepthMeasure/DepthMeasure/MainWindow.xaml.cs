@@ -24,5 +24,12 @@ namespace DepthMeasure
         {
             InitializeComponent();
         }
+
+        void ColorImage_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            var appModel = (AppModel)DataContext;
+            var p = e.GetPosition((Image)sender);
+            appModel.SelectedPosition.Value = p;
+        }
     }
 }
