@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using KLibrary.Labs.ObservableModel;
 using Microsoft.Kinect;
@@ -14,16 +13,11 @@ namespace DepthMeasure
 {
     public class AppModel
     {
-        const double Frequency = 30;
-        static readonly TimeSpan FramesInterval = TimeSpan.FromSeconds(1 / Frequency);
+        static readonly TimeSpan FramesInterval = TimeSpan.FromSeconds(1 / 30.0);
+        static readonly ColorBitmapInfo ColorBitmapInfo = BitmapInfo.ForColor(ColorImageFormat.RgbResolution640x480Fps30);
+        static readonly DepthBitmapInfo DepthBitmapInfo = BitmapInfo.ForDepth(DepthImageFormat.Resolution640x480Fps30);
 
-        const ColorImageFormat ColorFormat = ColorImageFormat.RgbResolution640x480Fps30;
-        const DepthImageFormat DepthFormat = DepthImageFormat.Resolution640x480Fps30;
-
-        Int32Rect _colorRect;
-        int _colorStride;
-
-        public ISettableProperty<WriteableBitmap> ColorBitmap { get; private set; }
+        public IGetOnlyProperty<WriteableBitmap> ColorBitmap { get; private set; }
         ISettableProperty<DepthImagePoint[]> _colorToDepth;
 
         public ISettableProperty<Point> SelectedPosition { get; private set; }
@@ -31,24 +25,24 @@ namespace DepthMeasure
 
         public AppModel()
         {
-            ColorBitmap = ObservableProperty.CreateSettable<WriteableBitmap>(null);
-            _colorToDepth = ObservableProperty.CreateSettable(new DepthImagePoint[640 * 480]);
+            _colorToDepth = ObservableProperty.CreateSettable(new DepthImagePoint[ColorBitmapInfo.PixelsCount]);
 
-            SelectedPosition = ObservableProperty.CreateSettable(new Point(320, 240));
-            SelectedDepth = ObservableProperty.CreateGetOnly(() => _colorToDepth.Value[(int)SelectedPosition.Value.X + 640 * (int)SelectedPosition.Value.Y].Depth);
+            SelectedPosition = ObservableProperty.CreateSettable(new Point(ColorBitmapInfo.Width / 2, ColorBitmapInfo.Height / 2));
+            SelectedDepth = ObservableProperty.CreateGetOnly(() => _colorToDepth.Value[(int)SelectedPosition.Value.X + ColorBitmapInfo.Width * (int)SelectedPosition.Value.Y].Depth);
 
             _colorToDepth.Subscribe(SelectedDepth);
             SelectedPosition.Subscribe(SelectedDepth);
 
             var kinect = new AsyncKinectManager();
+            ColorBitmap = kinect.Sensor
+                .ObserveOn(SynchronizationContext.Current)
+                .Select(sensor => sensor != null ? ColorBitmapInfo.CreateBitmap() : null)
+                .ToGetOnly(null);
             kinect.SensorConnected
-                .Do(sensor =>
+                .Subscribe(sensor =>
                 {
-                    sensor.ColorStream.Enable(ColorFormat);
-                    sensor.DepthStream.Enable(DepthFormat);
-
-                    _colorRect = new Int32Rect(0, 0, sensor.ColorStream.FrameWidth, sensor.ColorStream.FrameHeight);
-                    _colorStride = sensor.ColorStream.FrameBytesPerPixel * sensor.ColorStream.FrameWidth;
+                    sensor.ColorStream.Enable(ColorBitmapInfo.Format);
+                    sensor.DepthStream.Enable(DepthBitmapInfo.Format);
 
                     try
                     {
@@ -59,11 +53,8 @@ namespace DepthMeasure
                         // センサーが他のプロセスに既に使用されている場合に発生します。
                         Debug.WriteLine(ex);
                     }
-                })
-                .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(_ => ColorBitmap.Value = new WriteableBitmap(_colorRect.Width, _colorRect.Height, 96.0, 96.0, PixelFormats.Bgr32, null));
+                });
             kinect.SensorDisconnected
-                .Do(_ => ColorBitmap.Value = null)
                 .Subscribe(sensor => sensor.Stop());
             kinect.Initialize();
 
@@ -78,18 +69,14 @@ namespace DepthMeasure
             frameData
                 .Where(_ => _.ColorData != null)
                 .ObserveOn(SynchronizationContext.Current)
-                .Subscribe(_ =>
-                {
-                    var b = ColorBitmap.Value;
-                    if (b != null) b.WritePixels(_colorRect, _.ColorData, _colorStride, 0);
-                });
+                .Subscribe(_ => ColorBitmapInfo.WritePixels(ColorBitmap.Value, _.ColorData));
 
             frameData
                 .Where(_ => _.DepthData != null)
                 .Select(_ =>
                 {
-                    var cd = new DepthImagePoint[_colorRect.Width * _colorRect.Height];
-                    kinect.Sensor.Value.CoordinateMapper.MapColorFrameToDepthFrame(ColorFormat, DepthFormat, _.DepthData, cd);
+                    var cd = new DepthImagePoint[ColorBitmapInfo.PixelsCount];
+                    kinect.Sensor.Value.CoordinateMapper.MapColorFrameToDepthFrame(ColorBitmapInfo.Format, DepthBitmapInfo.Format, _.DepthData, cd);
                     return cd;
                 })
                 .Subscribe(_colorToDepth);
