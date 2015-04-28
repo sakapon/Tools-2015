@@ -18,21 +18,12 @@ namespace DepthMeasure
         static readonly DepthBitmapInfo DepthBitmapInfo = BitmapInfo.ForDepth(DepthImageFormat.Resolution640x480Fps30);
 
         public IGetOnlyProperty<WriteableBitmap> ColorBitmap { get; private set; }
-        ISettableProperty<DepthImagePoint[]> _colorToDepth;
 
         public ISettableProperty<Point> SelectedPosition { get; private set; }
         public IGetOnlyProperty<int> SelectedDepth { get; private set; }
 
         public AppModel()
         {
-            _colorToDepth = ObservableProperty.CreateSettable(new DepthImagePoint[ColorBitmapInfo.PixelsCount]);
-
-            SelectedPosition = ObservableProperty.CreateSettable(new Point(ColorBitmapInfo.Width / 2, ColorBitmapInfo.Height / 2));
-            SelectedDepth = ObservableProperty.CreateGetOnly(() => _colorToDepth.Value[(int)SelectedPosition.Value.X + ColorBitmapInfo.Width * (int)SelectedPosition.Value.Y].Depth);
-
-            _colorToDepth.Subscribe(SelectedDepth);
-            SelectedPosition.Subscribe(SelectedDepth);
-
             var kinect = new AsyncKinectManager();
             ColorBitmap = kinect.Sensor
                 .ObserveOn(SynchronizationContext.Current)
@@ -71,15 +62,21 @@ namespace DepthMeasure
                 .ObserveOn(SynchronizationContext.Current)
                 .Subscribe(_ => ColorBitmapInfo.WritePixels(ColorBitmap.Value, _.ColorData));
 
-            frameData
+            var colorDepthMap = frameData
                 .Where(_ => _.DepthData != null)
                 .Select(_ =>
                 {
-                    var cd = new DepthImagePoint[ColorBitmapInfo.PixelsCount];
-                    kinect.Sensor.Value.CoordinateMapper.MapColorFrameToDepthFrame(ColorBitmapInfo.Format, DepthBitmapInfo.Format, _.DepthData, cd);
-                    return cd;
+                    var map = new DepthImagePoint[ColorBitmapInfo.PixelsCount];
+                    kinect.Sensor.Value.CoordinateMapper.MapColorFrameToDepthFrame(ColorBitmapInfo.Format, DepthBitmapInfo.Format, _.DepthData, map);
+                    return map;
                 })
-                .Subscribe(_colorToDepth);
+                .ToGetOnly(new DepthImagePoint[ColorBitmapInfo.PixelsCount]);
+
+            SelectedPosition = ObservableProperty.CreateSettable(new Point(ColorBitmapInfo.Width / 2, ColorBitmapInfo.Height / 2));
+
+            SelectedDepth = ObservableProperty.CreateGetOnly(() => colorDepthMap.Value[(int)SelectedPosition.Value.X + ColorBitmapInfo.Width * (int)SelectedPosition.Value.Y].Depth);
+            colorDepthMap.Subscribe(SelectedDepth);
+            SelectedPosition.Subscribe(SelectedDepth);
         }
     }
 }
