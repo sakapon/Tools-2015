@@ -74,9 +74,11 @@ namespace DepthMeasure
 
             SelectedPosition = ObservableProperty.CreateSettable(new Point(ColorBitmapInfo.Width / 2, ColorBitmapInfo.Height / 2));
 
-            SelectedDepth = ObservableProperty.CreateGetOnly(() => colorDepthMap.Value[(int)SelectedPosition.Value.X + ColorBitmapInfo.Width * (int)SelectedPosition.Value.Y].Depth);
+            SelectedDepth = ObservableProperty.CreateGetOnly(() => colorDepthMap.Value[PositionToPixelIndex(SelectedPosition.Value)].Depth);
             colorDepthMap.Subscribe(SelectedDepth);
             SelectedPosition.Subscribe(SelectedDepth);
         }
+
+        static readonly Func<Point, int> PositionToPixelIndex = p => (int)p.X + ColorBitmapInfo.Width * (int)p.Y;
     }
 }
