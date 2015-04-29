@@ -11,7 +11,7 @@
 			<RowDefinition Height="Auto"/>
 			<RowDefinition/>
 		</Grid.RowDefinitions>
-		<TextBlock Text="{Binding SelectedDepth.Value, Mode=OneWay, StringFormat=\{0:N0\} mm}" HorizontalAlignment="Center" Margin="10"/>
+		<TextBlock Text="{Binding SelectedDepth.Value, Mode=OneWay, StringFormat=\{0:N0\} mm, TargetNullValue=N/A}" HorizontalAlignment="Center" Margin="10"/>
 		<Viewbox Grid.Row="1" Margin="10">
 			<Grid Height="480" Width="640">
 				<Image x:Name="ColorImage" Source="{Binding ColorBitmap.Value}"/>

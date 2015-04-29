@@ -20,7 +20,7 @@ namespace DepthMeasure
         public IGetOnlyProperty<WriteableBitmap> ColorBitmap { get; private set; }
 
         public ISettableProperty<Point> SelectedPosition { get; private set; }
-        public IGetOnlyProperty<int> SelectedDepth { get; private set; }
+        public IGetOnlyProperty<int?> SelectedDepth { get; private set; }
 
         public AppModel()
         {
@@ -74,7 +74,11 @@ namespace DepthMeasure
 
             SelectedPosition = ObservableProperty.CreateSettable(new Point(ColorBitmapInfo.Width / 2, ColorBitmapInfo.Height / 2));
 
-            SelectedDepth = ObservableProperty.CreateGetOnly(() => colorDepthMap.Value[PositionToPixelIndex(SelectedPosition.Value)].Depth);
+            SelectedDepth = ObservableProperty.CreateGetOnly(() =>
+            {
+                var depth = colorDepthMap.Value[PositionToPixelIndex(SelectedPosition.Value)].Depth;
+                return depth > 0 ? depth : default(int?);
+            });
             colorDepthMap.Subscribe(SelectedDepth);
             SelectedPosition.Subscribe(SelectedDepth);
         }
