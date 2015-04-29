@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,13 +24,12 @@ namespace DepthMeasure
         public MainWindow()
         {
             InitializeComponent();
-        }
 
-        void ColorImage_MouseUp(object sender, MouseButtonEventArgs e)
-        {
             var appModel = (AppModel)DataContext;
-            var p = e.GetPosition((Image)sender);
-            appModel.SelectedPosition.Value = p;
+
+            Observable.FromEventPattern<MouseButtonEventArgs>(ColorImage, "MouseUp")
+                .Select(_ => _.EventArgs.GetPosition(ColorImage))
+                .Subscribe(appModel.SelectedPosition);
         }
     }
 }

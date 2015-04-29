@@ -14,7 +14,7 @@
 		<TextBlock Text="{Binding SelectedDepth.Value, Mode=OneWay, StringFormat=\{0:N0\} mm}" HorizontalAlignment="Center" Margin="10"/>
 		<Viewbox Grid.Row="1" Margin="10">
 			<Grid Height="480" Width="640">
-				<Image Source="{Binding ColorBitmap.Value}" MouseUp="ColorImage_MouseUp"/>
+				<Image x:Name="ColorImage" Source="{Binding ColorBitmap.Value}"/>
 				<Ellipse Fill="#FFDD2222" HorizontalAlignment="Left" Height="15" VerticalAlignment="Top" Width="15" Margin="-7,-7,0,0" RenderTransformOrigin="0.5,0.5">
 					<Ellipse.RenderTransform>
 						<TransformGroup>
