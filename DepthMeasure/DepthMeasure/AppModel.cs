@@ -52,6 +52,7 @@ namespace DepthMeasure
             var frameData = Observable.Interval(FramesInterval)
                 .Select(_ => new
                 {
+                    Sensor = kinect.Sensor.Value,
                     ColorData = kinect.Sensor.Value.GetColorData(FramesInterval),
                     DepthData = kinect.Sensor.Value.GetDepthData(FramesInterval),
                 })
@@ -67,7 +68,7 @@ namespace DepthMeasure
                 .Select(_ =>
                 {
                     var map = new DepthImagePoint[ColorBitmapInfo.PixelsCount];
-                    kinect.Sensor.Value.CoordinateMapper.MapColorFrameToDepthFrame(ColorBitmapInfo.Format, DepthBitmapInfo.Format, _.DepthData, map);
+                    _.Sensor.CoordinateMapper.MapColorFrameToDepthFrame(ColorBitmapInfo.Format, DepthBitmapInfo.Format, _.DepthData, map);
                     return map;
                 })
                 .ToGetOnly(new DepthImagePoint[ColorBitmapInfo.PixelsCount]);
