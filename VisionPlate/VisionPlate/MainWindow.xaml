@@ -12,11 +12,14 @@
 		<local:AppModel/>
 	</Window.DataContext>
 	<i:Interaction.Triggers>
-		<i:EventTrigger EventName="MouseRightButtonUp">
-			<ei:ChangePropertyAction TargetObject="{Binding SwitchDevice, Mode=OneWay}" PropertyName="Value"/>
+		<i:EventTrigger>
+			<ei:ChangePropertyAction TargetObject="{Binding IsRunning, Mode=OneWay}" PropertyName="Value" Value="True"/>
 		</i:EventTrigger>
 		<i:EventTrigger EventName="Closing">
-			<ei:ChangePropertyAction TargetObject="{Binding StopVideo, Mode=OneWay}" PropertyName="Value"/>
+			<ei:ChangePropertyAction TargetObject="{Binding IsRunning, Mode=OneWay}" PropertyName="Value" Value="False"/>
+		</i:EventTrigger>
+		<i:EventTrigger EventName="MouseRightButtonUp">
+			<ei:ChangePropertyAction TargetObject="{Binding SwitchDevice, Mode=OneWay}" PropertyName="Value"/>
 		</i:EventTrigger>
 	</i:Interaction.Triggers>
 	<Border Background="#1955AAFF" BorderBrush="#663399FF" BorderThickness="1" Margin="7">

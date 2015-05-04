@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using AForge.Video;
 using AForge.Video.DirectShow;
 using KLibrary.Labs.ObservableModel;
 
@@ -14,54 +14,93 @@ namespace VisionPlate
 {
     public class AppModel : DispatchableBase
     {
+        static readonly Size BitmapSize = new Size(640, 480);
+
+        // 指定された解像度に最も近いものを探します。
+        static readonly Func<VideoCapabilities[], VideoCapabilities> GetResolution = cs => cs
+            .OrderBy(c => Math.Abs(c.FrameSize.Width - BitmapSize.Width))
+            .ThenBy(c => Math.Abs(c.FrameSize.Height - BitmapSize.Height))
+            .FirstOrDefault();
+
         public ISettableProperty<BitmapFrame> VideoBitmap { get; private set; }
 
-        public ISettableProperty<object> SwitchDevice { get; private set; }
-        public ISettableProperty<object> StopVideo { get; private set; }
+        public ISettableProperty<bool> IsRunning { get; private set; }
+        public IGetOnlyProperty<int> SelectedDeviceIndex { get; private set; }
 
-        FilterInfoCollection _deviceInfoes;
-        int _selectedDeviceIndex;
-        VideoCaptureDevice2 _selectedVideoDevice;
-        IDisposable _selectedVideoFrame;
+        public ISettableProperty<object> SwitchDevice { get; private set; }
+
+        VideoCaptureDevice[] _devices;
+        IDisposable _videoFrameSubscription;
 
         public AppModel()
         {
             VideoBitmap = ObservableProperty.CreateSettable<BitmapFrame>(null);
-
+            IsRunning = ObservableProperty.CreateSettable(false);
             SwitchDevice = ObservableProperty.CreateSettable<object>(null, true);
-            SwitchDevice.ObserveOn(Scheduler.Default)
-                .Subscribe(_ => StartDevice((_selectedDeviceIndex + 1) % _deviceInfoes.Count));
 
-            StopVideo = ObservableProperty.CreateSettable<object>(null, true);
-            StopVideo.Subscribe(_ =>
-            {
-                if (_selectedVideoDevice != null) _selectedVideoDevice.StopAsync();
-            });
+            var oldNewIndexes = SwitchDevice
+                .Select(_ => new
+                {
+                    OldValue = SelectedDeviceIndex.Value,
+                    NewValue = (SelectedDeviceIndex.Value + 1) % _devices.Length
+                })
+                .ToGetOnly(null);
+            SelectedDeviceIndex = oldNewIndexes
+                .Select(_ => _.NewValue)
+                .ToGetOnly(0);
 
-            Task.Run(() => InitializeDevice());
+            _devices = new FilterInfoCollection(FilterCategory.VideoInputDevice)
+                .Cast<FilterInfo>()
+                .Select(f => new VideoCaptureDevice(f.MonikerString))
+                .Do(d => d.VideoResolution = GetResolution(d.VideoCapabilities))
+                .ToArray();
+            if (_devices.Length == 0) return;
+
+            IsRunning
+                .ObserveOn(Scheduler.Default)
+                .Subscribe(b =>
+                {
+                    if (b)
+                    {
+                        StartDevice(SelectedDeviceIndex.Value);
+                    }
+                    else
+                    {
+                        StopDevice(SelectedDeviceIndex.Value);
+                    }
+                });
+
+            oldNewIndexes
+                .Where(_ => IsRunning.Value)
+                .ObserveOn(Scheduler.Default)
+                .Subscribe(_ =>
+                {
+                    StopDevice(_.OldValue);
+                    // 連続してデバイスを操作すると失敗することがあるため、待機します。
+                    Thread.Sleep(200);
+                    StartDevice(_.NewValue);
+                });
         }
 
-        void InitializeDevice()
+        void StartDevice(int index)
         {
-            _deviceInfoes = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-            if (_deviceInfoes.Count == 0) return;
+            var device = _devices[index];
 
-            StartDevice(0);
+            _videoFrameSubscription = Observable.FromEventPattern<NewFrameEventArgs>(device, "NewFrame")
+                .Select(_ => _.EventArgs.Frame)
+                .Select(DrawingHelper.ToBitmapFrame)
+                .Subscribe(VideoBitmap);
+            device.Start();
         }
 
-        async void StartDevice(int deviceIndex)
+        void StopDevice(int index)
         {
-            if (_selectedVideoFrame != null) _selectedVideoFrame.Dispose();
-            if (_selectedVideoDevice != null) _selectedVideoDevice.Dispose();
+            var device = _devices[index];
+
+            // VideoCaptureDevice を停止させないとアプリケーションが終了しないようです。
+            device.SignalToStop();
+            if (_videoFrameSubscription != null) _videoFrameSubscription.Dispose();
             VideoBitmap.Value = null;
-
-            // 連続してデバイスを操作すると失敗することがあるため、待機します。
-            await Task.Delay(200);
-
-            _selectedDeviceIndex = deviceIndex;
-            var deviceInfo = _deviceInfoes[_selectedDeviceIndex];
-            _selectedVideoDevice = new VideoCaptureDevice2(deviceInfo.MonikerString, new Size(640, 480));
-            _selectedVideoFrame = _selectedVideoDevice.FrameArrived.Select(DrawingHelper.ToBitmapFrame).Subscribe(VideoBitmap);
         }
     }
 }
