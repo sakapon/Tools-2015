@@ -25,6 +25,7 @@ namespace VisionPlate
             InitializeComponent();
 
             MouseLeftButtonDown += (o, e) => DragMove();
+            MouseRightButtonUp += (o, e) => Close();
         }
     }
 }
