@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:VisionPlate"
 		xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
 		x:Class="VisionPlate.MainWindow"
-        Title="Vision Plate" Height="400" Width="600" MinHeight="120" MinWidth="180" AllowsTransparency="True" WindowStyle="None" Background="#01FFFFFF" Topmost="True" SnapsToDevicePixels="True">
+        Title="Vision Plate" Height="400" Width="600" MinHeight="120" MinWidth="200" AllowsTransparency="True" WindowStyle="None" Background="#01FFFFFF" Topmost="True" SnapsToDevicePixels="True">
 	<WindowChrome.WindowChrome>
 		<WindowChrome CaptionHeight="0" ResizeBorderThickness="16"/>
 	</WindowChrome.WindowChrome>
@@ -18,18 +18,34 @@
 		<i:EventTrigger EventName="Closing">
 			<ei:ChangePropertyAction TargetObject="{Binding IsRunning, Mode=OneWay}" PropertyName="Value" Value="False"/>
 		</i:EventTrigger>
-		<i:EventTrigger EventName="MouseRightButtonUp">
-			<ei:ChangePropertyAction TargetObject="{Binding SwitchDevice, Mode=OneWay}" PropertyName="Value"/>
-		</i:EventTrigger>
 	</i:Interaction.Triggers>
 	<Border Background="#1955AAFF" BorderBrush="#663399FF" BorderThickness="1" Margin="7">
-		<Grid Margin="8" RenderTransformOrigin="0.5,0.5">
-			<Grid.RenderTransform>
-				<TransformGroup>
-					<ScaleTransform ScaleX="{Binding BitmapScaleX.Value, Mode=OneWay}"/>
-				</TransformGroup>
-			</Grid.RenderTransform>
-			<Image Source="{Binding VideoBitmap.Value, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.6"/>
+		<Grid Margin="8">
+			<Image Source="{Binding VideoBitmap.Value, Mode=OneWay}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.6" RenderTransformOrigin="0.5,0.5">
+				<Image.RenderTransform>
+					<TransformGroup>
+						<ScaleTransform ScaleX="{Binding BitmapScaleX.Value, Mode=OneWay}"/>
+					</TransformGroup>
+				</Image.RenderTransform>
+			</Image>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8,0,0,8" Opacity="0.6">
+				<Button Width="60" Height="60" BorderThickness="0" Background="#FF99CCFF" Margin="8">
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="Click">
+							<ei:ChangePropertyAction TargetObject="{Binding ReverseBitmap, Mode=OneWay}" PropertyName="Value"/>
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
+					<Image Source="Images/left-right.png"/>
+				</Button>
+				<Button Width="60" Height="60" BorderThickness="0" Background="#FF99CCFF" Margin="8">
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="Click">
+							<ei:ChangePropertyAction TargetObject="{Binding SwitchDevice, Mode=OneWay}" PropertyName="Value"/>
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
+					<Image Source="Images/next.png"/>
+				</Button>
+			</StackPanel>
 		</Grid>
 	</Border>
 </Window>
