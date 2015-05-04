@@ -65,6 +65,7 @@ namespace VisionPlate
             if (_devices.Length == 0) return;
 
             IsRunning
+                //.Throttle(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(Scheduler.Default)
                 .Subscribe(b =>
                 {
@@ -80,6 +81,7 @@ namespace VisionPlate
 
             oldNewIndexes
                 .Where(_ => IsRunning.Value)
+                //.Throttle(TimeSpan.FromMilliseconds(200))
                 .ObserveOn(Scheduler.Default)
                 .Subscribe(_ =>
                 {
