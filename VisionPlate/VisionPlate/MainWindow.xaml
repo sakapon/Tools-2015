@@ -28,7 +28,7 @@
 					</TransformGroup>
 				</Image.RenderTransform>
 			</Image>
-			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="8,0,0,8" Opacity="0.6">
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Opacity="0.6">
 				<Button Width="60" Height="60" BorderThickness="0" Background="#FF99CCFF" Margin="8">
 					<i:Interaction.Triggers>
 						<i:EventTrigger EventName="Click">
