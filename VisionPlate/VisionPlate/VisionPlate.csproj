@@ -89,6 +89,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CoreHelper.cs" />
     <Compile Include="DispatchableBase.cs" />
     <Compile Include="DrawingHelper.cs" />
     <Compile Include="VideoCaptureDevice2.cs" />
