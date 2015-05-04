@@ -22,21 +22,25 @@ namespace VisionPlate
             .ThenBy(c => Math.Abs(c.FrameSize.Height - BitmapSize.Height))
             .FirstOrDefault();
 
+        public ISettableProperty<object> SwitchDevice { get; private set; }
+        public ISettableProperty<object> ReverseBitmap { get; private set; }
+
         public ISettableProperty<BitmapFrame> VideoBitmap { get; private set; }
 
         public ISettableProperty<bool> IsRunning { get; private set; }
         public IGetOnlyProperty<int> SelectedDeviceIndex { get; private set; }
-
-        public ISettableProperty<object> SwitchDevice { get; private set; }
+        public IGetOnlyProperty<int> BitmapScaleX { get; private set; }
 
         VideoCaptureDevice[] _devices;
         IDisposable _videoFrameSubscription;
 
         public AppModel()
         {
+            SwitchDevice = ObservableProperty.CreateSettable<object>(null, true);
+            ReverseBitmap = ObservableProperty.CreateSettable<object>(null, true);
+
             VideoBitmap = ObservableProperty.CreateSettable<BitmapFrame>(null);
             IsRunning = ObservableProperty.CreateSettable(false);
-            SwitchDevice = ObservableProperty.CreateSettable<object>(null, true);
 
             var oldNewIndexes = SwitchDevice
                 .Select(_ => new
@@ -48,6 +52,10 @@ namespace VisionPlate
             SelectedDeviceIndex = oldNewIndexes
                 .Select(_ => _.NewValue)
                 .ToGetOnly(0);
+
+            BitmapScaleX = ReverseBitmap
+                .Select(_ => -1 * BitmapScaleX.Value)
+                .ToGetOnly(-1);
 
             _devices = new FilterInfoCollection(FilterCategory.VideoInputDevice)
                 .Cast<FilterInfo>()
